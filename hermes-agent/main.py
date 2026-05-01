@@ -1,4 +1,7 @@
+import json
+import os
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 import firebase_admin
 from firebase_admin import credentials
@@ -7,7 +10,11 @@ from routers import chat
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    cred = credentials.Certificate("serviceAccountKey.json")
+    sa_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+    if sa_json:
+        cred = credentials.Certificate(json.loads(sa_json))
+    else:
+        cred = credentials.Certificate("serviceAccountKey.json")
     firebase_admin.initialize_app(cred)
     yield
 
