@@ -1,20 +1,25 @@
+import base64
 import json
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
 import firebase_admin
+from fastapi import FastAPI
 from firebase_admin import credentials
+
 from routers import chat
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    sa_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
-    if sa_json:
-        cred = credentials.Certificate(json.loads(sa_json))
+    # Support base64-encoded JSON in env var (Railway/production) or a local file (dev)
+    encoded = os.environ.get("FIREBASE_SERVICE_ACCOUNT_BASE64")
+    if encoded:
+        service_account_info = json.loads(base64.b64decode(encoded).decode())
+        cred = credentials.Certificate(service_account_info)
     else:
-        cred = credentials.Certificate("serviceAccountKey.json")
+        path = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", "serviceAccountKey.json")
+        cred = credentials.Certificate(path)
     firebase_admin.initialize_app(cred)
     yield
 
