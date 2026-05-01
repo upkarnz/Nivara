@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app_theme.dart';
 import 'firebase_options.dart';
+import 'router/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,21 +14,18 @@ Future<void> main() async {
   runApp(const ProviderScope(child: NivaraApp()));
 }
 
-class NivaraApp extends StatelessWidget {
+class NivaraApp extends ConsumerWidget {
   const NivaraApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(appRouterProvider);
+    return MaterialApp.router(
       title: 'Nivara',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      home: const Scaffold(
-        body: Center(
-          child: Text('Nivara', style: TextStyle(fontSize: 32)),
-        ),
-      ),
+      routerConfig: router,
     );
   }
 }
