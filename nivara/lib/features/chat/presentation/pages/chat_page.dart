@@ -7,6 +7,7 @@ import '../../../profile/presentation/providers/profile_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/message_bubble.dart';
+import '../../../../../voice/voice_fab.dart';
 
 class ChatPage extends ConsumerWidget {
   const ChatPage({super.key});
@@ -29,6 +30,7 @@ class ChatPage extends ConsumerWidget {
     final isStreaming = messages.isNotEmpty && messages.last.isStreaming;
 
     return Scaffold(
+      floatingActionButton: const VoiceFab(),
       appBar: AppBar(
         title: configAsync.when(
           data: (c) => Text(c?.name ?? 'Nivara'),
