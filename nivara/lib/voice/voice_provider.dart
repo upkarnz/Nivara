@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import 'elevenlabs_tts_service.dart';
+import 'flutter_tts_service.dart';
+import 'tts_provider.dart';
 import 'tts_service.dart';
 import 'voice_settings_provider.dart';
 import 'voice_state.dart';
@@ -32,8 +35,8 @@ class VoiceNotifier extends Notifier<VoiceState> {
 
   @override
   VoiceState build() {
-    // Initialise asynchronously; UI starts in idle.
-    _tts = TtsService();
+    // Default to flutter_tts until settings load asynchronously.
+    _tts = FlutterTtsService();
     _init();
     // Clean up when the provider is disposed.
     ref.onDispose(() async {
@@ -51,9 +54,22 @@ class VoiceNotifier extends Notifier<VoiceState> {
     _sttReady = await _stt.initialize();
 
     final settings = await ref.read(voiceSettingsProvider.future);
+
+    // Replace default TTS with the user's preferred implementation.
+    await _tts.dispose();
+    _tts = _buildTtsService(settings);
+
     _wakeWord = _buildWakeWordService(settings);
     _wakeWord!.onWakeWord = _onWakeWordDetected;
     await _wakeWord!.start();
+  }
+
+  TtsService _buildTtsService(VoiceSettings settings) {
+    if (settings.ttsProvider == TtsProvider.elevenLabs &&
+        settings.elevenLabsApiKey.isNotEmpty) {
+      return ElevenLabsTtsService(apiKey: settings.elevenLabsApiKey);
+    }
+    return FlutterTtsService();
   }
 
   WakeWordService _buildWakeWordService(VoiceSettings settings) {

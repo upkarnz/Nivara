@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nivara/voice/flutter_tts_service.dart';
 import 'package:nivara/voice/tts_service.dart';
 
 void main() {
@@ -11,7 +12,6 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_ttsChannel, (call) async {
-      // Return null for all method calls – sufficient for unit tests.
       return null;
     });
   });
@@ -21,13 +21,20 @@ void main() {
         .setMockMethodCallHandler(_ttsChannel, null);
   });
 
-  group('TtsService', () {
-    late TtsService sut;
+  group('TtsService (abstract)', () {
+    test('FlutterTtsService implements TtsService', () {
+      final sut = FlutterTtsService();
+      expect(sut, isA<TtsService>());
+    });
+  });
 
-    setUp(() => sut = TtsService());
+  group('FlutterTtsService', () {
+    late FlutterTtsService sut;
+
+    setUp(() => sut = FlutterTtsService());
 
     test('can be instantiated', () {
-      expect(sut, isA<TtsService>());
+      expect(sut, isNotNull);
     });
 
     test('speak returns a Future', () async {

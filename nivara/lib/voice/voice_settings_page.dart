@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'tts_provider.dart';
 import 'voice_settings_provider.dart';
 import 'wake_word_engine.dart';
 
-/// Settings page for configuring the wake-word detection engine.
+/// Settings page for configuring wake-word detection and TTS engine.
 ///
-/// Presents a [RadioListTile] per [WakeWordEngine] value.
-/// When [WakeWordEngine.porcupine] is selected, an additional text field
-/// appears so the user can paste their Picovoice AccessKey.
+/// • Wake Word section: [RadioListTile] per [WakeWordEngine].
+///   When [WakeWordEngine.porcupine] is selected an AccessKey field appears.
+///
+/// • TTS Provider section: [RadioListTile] per [TtsProvider].
+///   When [TtsProvider.elevenLabs] is selected an API key field appears.
 class VoiceSettingsPage extends ConsumerStatefulWidget {
   const VoiceSettingsPage({super.key});
 
@@ -17,18 +20,22 @@ class VoiceSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
-  late final TextEditingController _keyCtrl;
-  bool _obscure = true;
+  late final TextEditingController _porcupineCtrl;
+  late final TextEditingController _elevenLabsCtrl;
+  bool _obscurePorcupine = true;
+  bool _obscureElevenLabs = true;
 
   @override
   void initState() {
     super.initState();
-    _keyCtrl = TextEditingController();
+    _porcupineCtrl = TextEditingController();
+    _elevenLabsCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
-    _keyCtrl.dispose();
+    _porcupineCtrl.dispose();
+    _elevenLabsCtrl.dispose();
     super.dispose();
   }
 
@@ -38,25 +45,31 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wake Word Settings'),
+        title: const Text('Voice Settings'),
         backgroundColor: Colors.transparent,
       ),
       body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (settings) {
-          // Keep text-field in sync when settings load.
-          if (_keyCtrl.text.isEmpty && settings.porcupineAccessKey.isNotEmpty) {
-            _keyCtrl.text = settings.porcupineAccessKey;
+          // Keep text fields in sync when settings load.
+          if (_porcupineCtrl.text.isEmpty &&
+              settings.porcupineAccessKey.isNotEmpty) {
+            _porcupineCtrl.text = settings.porcupineAccessKey;
+          }
+          if (_elevenLabsCtrl.text.isEmpty &&
+              settings.elevenLabsApiKey.isNotEmpty) {
+            _elevenLabsCtrl.text = settings.elevenLabsApiKey;
           }
 
           return ListView(
             padding: const EdgeInsets.symmetric(vertical: 8),
             children: [
+              // ── Wake Word section header ────────────────────────────────
               const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: Text(
-                  'Wake Word Engine',
+                  'WAKE WORD ENGINE',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -104,23 +117,26 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                 },
               ),
 
-              // ── Porcupine AccessKey field (conditional) ───────────────────
+              // ── Porcupine AccessKey field (conditional) ──────────────────
               if (settings.engine == WakeWordEngine.porcupine)
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: TextField(
                     key: const Key('porcupine_key_field'),
-                    controller: _keyCtrl,
-                    obscureText: _obscure,
+                    controller: _porcupineCtrl,
+                    obscureText: _obscurePorcupine,
                     decoration: InputDecoration(
                       labelText: 'Picovoice AccessKey',
                       hintText: 'Paste your AccessKey here',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscure ? Icons.visibility : Icons.visibility_off,
+                          _obscurePorcupine
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
-                        onPressed: () => setState(() => _obscure = !_obscure),
+                        onPressed: () =>
+                            setState(() => _obscurePorcupine = !_obscurePorcupine),
                       ),
                     ),
                     onSubmitted: (key) => ref
@@ -137,8 +153,102 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                   child: ElevatedButton(
                     onPressed: () => ref
                         .read(voiceSettingsProvider.notifier)
-                        .setPorcupineAccessKey(_keyCtrl.text.trim()),
+                        .setPorcupineAccessKey(_porcupineCtrl.text.trim()),
                     child: const Text('Save AccessKey'),
+                  ),
+                ),
+
+              const Divider(height: 32),
+
+              // ── TTS Provider section header ──────────────────────────────
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Text(
+                  'TEXT-TO-SPEECH ENGINE',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white60,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+
+              // ── flutter_tts option ───────────────────────────────────────
+              RadioListTile<TtsProvider>(
+                value: TtsProvider.flutterTts,
+                groupValue: settings.ttsProvider,
+                title: const Text('Built-in TTS'),
+                subtitle: const Text(
+                  'No API key required. Uses on-device text-to-speech.',
+                  style: TextStyle(fontSize: 12, color: Colors.white54),
+                ),
+                onChanged: (v) {
+                  if (v != null) {
+                    ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setTtsProvider(v);
+                  }
+                },
+              ),
+
+              // ── ElevenLabs option ────────────────────────────────────────
+              RadioListTile<TtsProvider>(
+                value: TtsProvider.elevenLabs,
+                groupValue: settings.ttsProvider,
+                title: const Text('ElevenLabs (cloud)'),
+                subtitle: const Text(
+                  'High-quality AI voice synthesis. Requires a free API key '
+                  'from elevenlabs.io.',
+                  style: TextStyle(fontSize: 12, color: Colors.white54),
+                ),
+                onChanged: (v) {
+                  if (v != null) {
+                    ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setTtsProvider(v);
+                  }
+                },
+              ),
+
+              // ── ElevenLabs API key field (conditional) ───────────────────
+              if (settings.ttsProvider == TtsProvider.elevenLabs)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    key: const Key('elevenlabs_key_field'),
+                    controller: _elevenLabsCtrl,
+                    obscureText: _obscureElevenLabs,
+                    decoration: InputDecoration(
+                      labelText: 'ElevenLabs API Key',
+                      hintText: 'Paste your API key here',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureElevenLabs
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () => setState(
+                            () => _obscureElevenLabs = !_obscureElevenLabs),
+                      ),
+                    ),
+                    onSubmitted: (key) => ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setElevenLabsApiKey(key.trim()),
+                    onEditingComplete: () {},
+                  ),
+                ),
+
+              if (settings.ttsProvider == TtsProvider.elevenLabs)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: ElevatedButton(
+                    onPressed: () => ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setElevenLabsApiKey(_elevenLabsCtrl.text.trim()),
+                    child: const Text('Save API Key'),
                   ),
                 ),
             ],
