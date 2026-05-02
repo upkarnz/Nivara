@@ -83,7 +83,7 @@ class VoiceNotifier extends Notifier<VoiceState> {
         }
       },
       listenFor: const Duration(seconds: 15),
-      cancelOnError: true,
+      listenOptions: SpeechListenOptions(cancelOnError: true),
     );
   }
 

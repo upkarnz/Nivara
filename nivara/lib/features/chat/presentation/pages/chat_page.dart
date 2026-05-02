@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/models/user_profile.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -39,6 +40,11 @@ class ChatPage extends ConsumerWidget {
         ),
         backgroundColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Voice settings',
+            onPressed: () => context.push('/settings/voice'),
+          ),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             onPressed: () => ref.read(authRepositoryProvider).signOut(),

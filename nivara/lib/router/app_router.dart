@@ -7,6 +7,7 @@ import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/chat/presentation/pages/chat_page.dart';
 import '../features/profile/presentation/pages/assistant_setup_page.dart';
 import '../features/profile/presentation/pages/profile_setup_page.dart';
+import '../voice/voice_settings_page.dart';
 
 part 'app_router.g.dart';
 
@@ -45,6 +46,10 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(
         path: '/chat',
         builder: (context, state) => const ChatPage(),
+      ),
+      GoRoute(
+        path: '/settings/voice',
+        builder: (context, state) => const VoiceSettingsPage(),
       ),
     ],
   );

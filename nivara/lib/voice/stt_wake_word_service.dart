@@ -34,8 +34,10 @@ class SttWakeWordService implements WakeWordService {
         }
       },
       listenFor: _listenDuration,
-      onDevice: true,
-      cancelOnError: false,
+      listenOptions: SpeechListenOptions(
+        onDevice: true,
+        cancelOnError: false,
+      ),
     );
     // Restart burst after the listen window closes.
     Future.delayed(_listenDuration + const Duration(milliseconds: 300), () {
