@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../features/planner/data/google_calendar_repository.dart';
 import 'tts_provider.dart';
 import 'voice_settings_provider.dart';
 import 'wake_word_engine.dart';
@@ -251,10 +253,82 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                     child: const Text('Save API Key'),
                   ),
                 ),
+
+              const Divider(height: 32),
+
+              // ── Google Calendar section ──────────────────────────────────
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Text(
+                  'GOOGLE CALENDAR',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white60,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+              const _GoogleCalendarTile(key: Key('google_calendar_tile')),
             ],
           );
         },
       ),
+    );
+  }
+}
+
+class _GoogleCalendarTile extends ConsumerStatefulWidget {
+  const _GoogleCalendarTile({super.key});
+
+  @override
+  ConsumerState<_GoogleCalendarTile> createState() =>
+      _GoogleCalendarTileState();
+}
+
+class _GoogleCalendarTileState extends ConsumerState<_GoogleCalendarTile> {
+  bool? _connected;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkConnection();
+  }
+
+  Future<void> _checkConnection() async {
+    final repo = ref.read(googleCalendarRepositoryProvider);
+    final connected = await repo.isConnected();
+    if (mounted) setState(() => _connected = connected);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_connected == null) {
+      return const ListTile(
+        title: Text('Google Calendar'),
+        trailing: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+
+    return ListTile(
+      title: const Text('Google Calendar'),
+      subtitle: Text(
+        _connected! ? 'Connected' : 'Not connected',
+        style: TextStyle(
+          fontSize: 12,
+          color: _connected! ? Colors.greenAccent : Colors.white38,
+        ),
+      ),
+      trailing: _connected!
+          ? const Icon(Icons.check_circle_outline, color: Colors.greenAccent)
+          : ElevatedButton(
+              onPressed: () => context.push('/planner/calendar-consent'),
+              child: const Text('Connect'),
+            ),
     );
   }
 }
