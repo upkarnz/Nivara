@@ -42,6 +42,11 @@ class ChatPage extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
+            icon: const Icon(Icons.calendar_month_outlined),
+            tooltip: 'Planner',
+            onPressed: () => context.push('/planner'),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Voice settings',
             onPressed: () => context.push('/settings/voice'),
