@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/models/user_profile.dart';
 import '../../../auth/data/auth_repository.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_input_bar.dart';

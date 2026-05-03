@@ -7,7 +7,7 @@ part of 'firestore_calendar_repository.dart';
 // **************************************************************************
 
 String _$firestoreCalendarRepositoryHash() =>
-    r'862f40085be68c8d4bf1dda51089330f265ff15e';
+    r'1f9cd5a202705221d342a42e54a4d64b780653da';
 
 /// See also [firestoreCalendarRepository].
 @ProviderFor(firestoreCalendarRepository)

@@ -36,7 +36,7 @@ class HermesClient {
     required String assistantName,
     String aiModel = 'claude',
   }) async* {
-    final token = _tokenProvider != null ? await _tokenProvider!() : '';
+    final token = _tokenProvider != null ? await _tokenProvider() : '';
 
     final request = http.Request(
       'POST',
