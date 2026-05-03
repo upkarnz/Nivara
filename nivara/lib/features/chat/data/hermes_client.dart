@@ -36,11 +36,11 @@ class HermesClient {
     required String assistantName,
     String aiModel = 'claude',
   }) async* {
-    final token = _tokenProvider != null ? await _tokenProvider!() : '';
+    final token = _tokenProvider != null ? await _tokenProvider() : '';
 
     final request = http.Request(
       'POST',
-      Uri.parse('$_baseUrl/api/v1/chat'),
+      Uri.parse('$_baseUrl/api/v1/chat/stream'),
     );
     request.headers['Authorization'] = 'Bearer $token';
     request.headers['Accept'] = 'text/event-stream';

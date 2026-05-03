@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/models/user_profile.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/data/auth_repository.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/message_bubble.dart';
+import '../../../../../voice/voice_fab.dart';
 
 class ChatPage extends ConsumerWidget {
   const ChatPage({super.key});
@@ -29,6 +31,7 @@ class ChatPage extends ConsumerWidget {
     final isStreaming = messages.isNotEmpty && messages.last.isStreaming;
 
     return Scaffold(
+      floatingActionButton: const VoiceFab(),
       appBar: AppBar(
         title: configAsync.when(
           data: (c) => Text(c?.name ?? 'Nivara'),
@@ -37,6 +40,16 @@ class ChatPage extends ConsumerWidget {
         ),
         backgroundColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month_outlined),
+            tooltip: 'Planner',
+            onPressed: () => context.push('/planner'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Voice settings',
+            onPressed: () => context.push('/settings/voice'),
+          ),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             onPressed: () => ref.read(authRepositoryProvider).signOut(),
