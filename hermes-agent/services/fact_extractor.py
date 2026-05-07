@@ -28,14 +28,30 @@ class FactExtractor:
         """
         try:
             raw = await self._provider.extract_facts(conversation_text)
+        except Exception:
+            logger.exception("Provider extract_facts raised unexpectedly")
+            return []
+
+        try:
             data = json.loads(raw)
-            facts = data.get("facts", [])
-        except (json.JSONDecodeError, Exception) as e:
-            logger.warning("Fact extraction failed: %s", e)
+        except (json.JSONDecodeError, TypeError, ValueError) as e:
+            logger.warning("Fact extraction parse failed: %s", e)
+            return []
+
+        if not isinstance(data, dict):
+            logger.warning("Unexpected JSON structure from provider: %s", type(data).__name__)
+            return []
+
+        facts = data.get("facts", [])
+        if not isinstance(facts, list):
+            logger.warning("'facts' field is not a list")
             return []
 
         results: list[MemoryCreate] = []
         for fact in facts:
+            if not isinstance(fact, dict):
+                logger.debug("Skipping non-dict fact: %s", type(fact).__name__)
+                continue
             try:
                 confidence = float(fact.get("confidence", 0))
                 if confidence < CONFIDENCE_THRESHOLD:
