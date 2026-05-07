@@ -12,6 +12,12 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 class ChromaService:
+    """Vector store service backed by ChromaDB with sentence-transformer embeddings.
+
+    Provides upsert, semantic query, and delete operations for Memory objects.
+    All ChromaDB calls run in a thread pool via asyncio.to_thread.
+    """
+
     def __init__(self) -> None:
         self._client = chromadb.EphemeralClient()
         embedding_fn = SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODEL)
@@ -33,9 +39,9 @@ class ChromaService:
             }],
         )
 
-    async def query(self, text: str, uid: str = "", n_results: int = 5) -> list[str]:
+    async def query(self, text: str, uid: str | None = None, n_results: int = 5) -> list[str]:
         """Return memory IDs semantically similar to text. Returns [] on error."""
-        where = {"uid": uid} if uid else None
+        where = {"uid": uid} if uid is not None else None
         try:
             results = await asyncio.to_thread(
                 self._collection.query,
@@ -44,8 +50,8 @@ class ChromaService:
                 where=where,
             )
             return results["ids"][0] if results["ids"] else []
-        except Exception as e:
-            logger.warning("ChromaDB query failed: %s", e)
+        except Exception:
+            logger.exception("ChromaDB query failed")
             return []
 
     async def delete(self, memory_id: str) -> None:

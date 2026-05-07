@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 from services.chroma_service import ChromaService
 from models.memory import Memory, MemoryType
 
@@ -61,3 +61,40 @@ async def test_delete_calls_collection(chroma_service):
     chroma_service._collection.delete = MagicMock()
     await chroma_service.delete("mem1")
     chroma_service._collection.delete.assert_called_once_with(ids=["mem1"])
+
+
+@pytest.mark.asyncio
+async def test_query_with_uid_filter(chroma_service):
+    """query() passes where={"uid": uid} when uid provided."""
+    chroma_service._collection.query = MagicMock(return_value={"ids": [["mem1"]], "distances": [[0.1]]})
+    await chroma_service.query("hiking", uid="user1", n_results=3)
+    call_kwargs = chroma_service._collection.query.call_args[1]
+    assert call_kwargs["where"] == {"uid": "user1"}
+    assert call_kwargs["n_results"] == 3
+
+
+@pytest.mark.asyncio
+async def test_query_no_uid_passes_no_where(chroma_service):
+    """query() passes where=None when no uid provided."""
+    chroma_service._collection.query = MagicMock(return_value={"ids": [], "distances": []})
+    await chroma_service.query("hiking")
+    call_kwargs = chroma_service._collection.query.call_args[1]
+    assert call_kwargs["where"] is None
+
+
+@pytest.mark.asyncio
+async def test_query_returns_empty_on_exception(chroma_service):
+    """query() returns [] when ChromaDB raises."""
+    chroma_service._collection.query = MagicMock(side_effect=RuntimeError("chroma down"))
+    ids = await chroma_service.query("hiking")
+    assert ids == []
+
+
+@pytest.mark.asyncio
+async def test_upsert_passes_metadatas(chroma_service):
+    """upsert() passes uid, memory_type, confidence in metadatas."""
+    memory = make_memory()
+    chroma_service._collection.upsert = MagicMock()
+    await chroma_service.upsert(memory)
+    call_kwargs = chroma_service._collection.upsert.call_args[1]
+    assert call_kwargs["metadatas"] == [{"uid": "user1", "memory_type": "preference", "confidence": 0.9}]
