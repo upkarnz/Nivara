@@ -9,27 +9,24 @@ async def async_iter(items):
         yield item
 
 
-def make_mock_stream(chunks):
-    """Create a mock client whose messages.stream(...) is an async context manager."""
-    mock_stream_obj = MagicMock()
-    mock_stream_obj.text_stream = async_iter(chunks)
+def make_mock_provider(chunks):
+    """Create a mock provider that yields text chunks."""
+    async def mock_stream_response(messages, system):
+        for chunk in chunks:
+            yield chunk
 
-    mock_cm = AsyncMock()
-    mock_cm.__aenter__ = AsyncMock(return_value=mock_stream_obj)
-    mock_cm.__aexit__ = AsyncMock(return_value=False)
-
-    mock_client = MagicMock()
-    mock_client.messages.stream.return_value = mock_cm
-    return mock_client, mock_cm
+    mock_provider = MagicMock()
+    mock_provider.stream_response = mock_stream_response
+    return mock_provider
 
 
 @pytest.mark.asyncio
 async def test_stream_claude_response_yields_chunks():
     from services.claude_service import stream_claude_response
 
-    mock_client, _ = make_mock_stream(["Hello", ", ", "world", "!"])
+    mock_provider = make_mock_provider(["Hello", ", ", "world", "!"])
 
-    with patch("services.claude_service.get_client", return_value=mock_client):
+    with patch("services.claude_service.get_provider", return_value=mock_provider):
         messages = [ChatMessage(role=Role.user, content="Hi")]
         chunks = []
         async for chunk in stream_claude_response(messages, assistant_name="Rocky"):
@@ -42,24 +39,38 @@ async def test_stream_claude_response_yields_chunks():
 async def test_stream_claude_response_uses_assistant_name():
     from services.claude_service import stream_claude_response
 
-    mock_client, _ = make_mock_stream(["Hi"])
+    called_with = {}
 
-    with patch("services.claude_service.get_client", return_value=mock_client):
+    async def mock_stream_response(messages, system):
+        called_with["system"] = system
+        yield "Hi"
+
+    mock_provider = MagicMock()
+    mock_provider.stream_response = mock_stream_response
+
+    with patch("services.claude_service.get_provider", return_value=mock_provider):
         messages = [ChatMessage(role=Role.user, content="Hello")]
         async for _ in stream_claude_response(messages, assistant_name="Aria"):
             pass
 
-    call_kwargs = mock_client.messages.stream.call_args.kwargs
-    assert "Aria" in call_kwargs["system"]
+    assert "Aria" in called_with["system"]
 
 
 @pytest.mark.asyncio
 async def test_stream_claude_response_correct_payload():
     from services.claude_service import stream_claude_response
 
-    mock_client, _ = make_mock_stream(["ok"])
+    called_with = {}
 
-    with patch("services.claude_service.get_client", return_value=mock_client):
+    async def mock_stream_response(messages, system):
+        called_with["messages"] = messages
+        called_with["system"] = system
+        yield "ok"
+
+    mock_provider = MagicMock()
+    mock_provider.stream_response = mock_stream_response
+
+    with patch("services.claude_service.get_provider", return_value=mock_provider):
         messages = [
             ChatMessage(role=Role.user, content="Hi"),
             ChatMessage(role=Role.assistant, content="Hello!"),
@@ -68,11 +79,8 @@ async def test_stream_claude_response_correct_payload():
         async for _ in stream_claude_response(messages):
             pass
 
-    call_kwargs = mock_client.messages.stream.call_args.kwargs
-    assert call_kwargs["messages"] == [
+    assert called_with["messages"] == [
         {"role": "user", "content": "Hi"},
         {"role": "assistant", "content": "Hello!"},
         {"role": "user", "content": "How are you?"},
     ]
-    assert call_kwargs["model"] == "claude-sonnet-4-6"
-    assert call_kwargs["max_tokens"] == 1024
