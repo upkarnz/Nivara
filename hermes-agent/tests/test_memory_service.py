@@ -92,6 +92,52 @@ def test_check_duplicate_returns_false_on_low_overlap(service):
 
 
 @pytest.mark.asyncio
+async def test_save_memory_reinforces_existing_duplicate(service):
+    """save_memory updates existing doc when duplicate detected."""
+    create = MemoryCreate(
+        content="user loves hiking outdoors",
+        memory_type=MemoryType.preference,
+        confidence=0.95,
+    )
+
+    existing_data = {
+        "uid": "user1",
+        "content": "user loves hiking outdoors daily",
+        "memory_type": "preference",
+        "confidence": 0.8,
+        "created_at": "2026-05-03T00:00:00Z",
+        "last_reinforced": "2026-05-03T00:00:00Z",
+        "reinforcement_count": 1,
+        "source_turn": None,
+    }
+    mock_doc = MagicMock()
+    mock_doc.id = "existing_id"
+    mock_doc.to_dict.return_value = existing_data
+
+    ref_mock = service._db.collection.return_value.document.return_value.collection.return_value
+    ref_mock.where.return_value.stream.return_value = iter([mock_doc])
+    ref_mock.document.return_value.update = MagicMock()
+
+    call_count = 0
+
+    async def fake_to_thread(fn, *args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            # stream call (lambda returning list of existing docs)
+            return [mock_doc]
+        # subsequent calls (update)
+        return None
+
+    with patch("services.memory_service.asyncio.to_thread", side_effect=fake_to_thread):
+        reinforced = await service.save_memory("user1", create)
+
+    assert reinforced.id == "existing_id"
+    assert reinforced.reinforcement_count == 2
+    assert reinforced.confidence == 0.95
+
+
+@pytest.mark.asyncio
 async def test_delete_memory_calls_chroma_and_firestore(service):
     service._chroma.delete = AsyncMock()
     service._db.collection.return_value.document.return_value.collection.return_value.document.return_value.delete = MagicMock()

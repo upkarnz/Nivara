@@ -31,6 +31,7 @@ class MemoryService:
         self._chroma = chroma or ChromaService()
         self._obsidian = obsidian or ObsidianService()
         self._db = db or firestore.client()
+        self._background_tasks: set[asyncio.Task] = set()
 
     def _memories_ref(self, uid: str):
         return self._db.collection("users").document(uid).collection(MEMORIES_COLLECTION)
@@ -79,7 +80,9 @@ class MemoryService:
                     "confidence": max(data.get("confidence", 0), create.confidence),
                 }
                 await asyncio.to_thread(ref.document(doc.id).update, update_data)
-                return Memory(id=doc.id, uid=uid, **{**data, **update_data})
+                merged = {**data, **update_data}
+                merged.pop("uid", None)
+                return Memory(id=doc.id, uid=uid, **merged)
 
         memory_data = {
             "uid": uid,
@@ -95,7 +98,9 @@ class MemoryService:
         memory = Memory(id=memory_id, **memory_data)
 
         await self._chroma.upsert(memory)
-        asyncio.create_task(self._obsidian.write_memory(memory))
+        task = asyncio.create_task(self._obsidian.write_memory(memory))
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.discard)
 
         return memory
 
