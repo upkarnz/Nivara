@@ -35,13 +35,14 @@ void main() {
         client: mockClient,
         baseUrl: 'http://localhost:8000',
       );
-      expect(() => repo.fetchMemories('bad_token'), throwsException);
+      await expectLater(repo.fetchMemories('bad_token'), throwsException);
     });
 
     test('deleteMemory calls DELETE endpoint', () async {
       bool deleteCalled = false;
       final mockClient = MockClient((request) async {
-        if (request.method == 'DELETE') {
+        if (request.method == 'DELETE' &&
+            request.url.path == '/api/v1/memory/mem1') {
           deleteCalled = true;
           return http.Response('', 204);
         }

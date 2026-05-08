@@ -6,10 +6,16 @@ import '../domain/memory.dart';
 
 class MemoryRepository {
   MemoryRepository({required this.baseUrl, http.Client? client})
-      : _client = client ?? http.Client();
+      : _client = client ?? http.Client(),
+        _ownsClient = client == null;
 
   final String baseUrl;
   final http.Client _client;
+  final bool _ownsClient;
+
+  void dispose() {
+    if (_ownsClient) _client.close();
+  }
 
   Future<List<Memory>> fetchMemories(String idToken) async {
     final response = await _client.get(
