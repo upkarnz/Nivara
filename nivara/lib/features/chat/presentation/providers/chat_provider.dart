@@ -37,8 +37,9 @@ class ChatNotifier extends _$ChatNotifier {
     final assistantName = config?.name ?? 'Rocky';
 
     final client = ref.read(hermesClientProvider);
-    final aiModel =
-        ref.read(aiModelNotifierProvider).valueOrNull ?? 'claude';
+    final aiModel = await ref
+        .read(aiModelNotifierProvider.future)
+        .catchError((_) => 'claude');
     final buffer = StringBuffer();
 
     await for (final chunk in client.chatStream(
