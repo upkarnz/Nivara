@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/ai_model_provider.dart';
@@ -17,8 +18,12 @@ class ModelSelectorWidget extends ConsumerWidget {
 
     return modelAsync.when(
       loading: () => const CircularProgressIndicator.adaptive(),
-      error: (e, _) => Text('Error: $e'),
+      error: (e, stack) {
+        debugPrint('AiModelNotifier error: $e\n$stack');
+        return Text('Error: $e');
+      },
       data: (selected) => Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _models.map((model) {
           final (value, label, subtitle) = model;
@@ -29,7 +34,7 @@ class ModelSelectorWidget extends ConsumerWidget {
             subtitle: Text(subtitle),
             onChanged: (v) {
               if (v != null) {
-                ref.read(aiModelNotifierProvider.notifier).setModel(v);
+                unawaited(ref.read(aiModelNotifierProvider.notifier).setModel(v));
               }
             },
           );

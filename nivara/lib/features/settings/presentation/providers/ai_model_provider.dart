@@ -5,15 +5,16 @@ const _prefsKey = 'selected_ai_model';
 const _defaultModel = 'claude';
 
 class AiModelNotifier extends AsyncNotifier<String> {
+  late SharedPreferences _prefs;
+
   @override
   Future<String> build() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_prefsKey) ?? _defaultModel;
+    _prefs = await SharedPreferences.getInstance();
+    return _prefs.getString(_prefsKey) ?? _defaultModel;
   }
 
   Future<void> setModel(String model) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsKey, model);
+    await _prefs.setString(_prefsKey, model);
     state = AsyncData(model);
   }
 }
