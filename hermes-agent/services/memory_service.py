@@ -41,7 +41,7 @@ class MemoryService:
         tokens_b = set(content_b.lower().split())
         if not tokens_a or not tokens_b:
             return False
-        overlap = len(tokens_a & tokens_b) / min(len(tokens_a), len(tokens_b))
+        overlap = len(tokens_a & tokens_b) / max(len(tokens_a), len(tokens_b))
         return overlap >= DUPLICATE_THRESHOLD
 
     async def _get_doc(self, ref):

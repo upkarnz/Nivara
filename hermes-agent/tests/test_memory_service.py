@@ -82,7 +82,7 @@ async def test_save_memory_writes_to_firestore_and_chroma(service):
 
 @pytest.mark.asyncio
 async def test_check_duplicate_returns_true_on_high_overlap(service):
-    is_dup = service._is_duplicate("Loves hiking Fiordland", "Loves hiking in Fiordland")
+    is_dup = service._is_duplicate("user loves hiking outdoors", "user loves hiking outdoors daily")
     assert is_dup is True
 
 
