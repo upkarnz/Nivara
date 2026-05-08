@@ -4,6 +4,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../../planner/data/firestore_calendar_repository.dart';
 import '../../../planner/domain/event.dart';
+import '../../../settings/presentation/providers/ai_model_provider.dart';
 import '../../data/hermes_client.dart';
 import '../../domain/event_parser.dart';
 import '../../domain/message.dart';
@@ -36,11 +37,14 @@ class ChatNotifier extends _$ChatNotifier {
     final assistantName = config?.name ?? 'Rocky';
 
     final client = ref.read(hermesClientProvider);
+    final aiModel =
+        ref.read(aiModelNotifierProvider).valueOrNull ?? 'claude';
     final buffer = StringBuffer();
 
     await for (final chunk in client.chatStream(
       messages: hermesMessages,
       assistantName: assistantName,
+      aiModel: aiModel,
     )) {
       buffer.write(chunk);
       final updated = List<ChatMessage>.from(state);
