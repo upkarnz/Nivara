@@ -62,14 +62,17 @@ class HermesClient {
         final raw = buffer.toString();
         buffer.clear();
 
-        for (final line in raw.split('\n')) {
-          final trimmed = line.trim();
+        final lines = raw.split('\n');
+        for (int i = 0; i < lines.length - 1; i++) {
+          final trimmed = lines[i].trim();
           if (trimmed.startsWith('data: ')) {
             final data = trimmed.substring(6);
             if (data == '[DONE]') return;
             yield data;
           }
         }
+        // Retain any incomplete last line in buffer for next chunk
+        buffer.write(lines.last);
       }
     } finally {
       client.close();

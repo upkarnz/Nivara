@@ -7,7 +7,7 @@ import firebase_admin
 from fastapi import FastAPI
 from firebase_admin import credentials
 
-from routers import chat
+from routers import chat, memory
 
 
 @asynccontextmanager
@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Hermes Agent Service", version="1.0.0", lifespan=lifespan)
 app.include_router(chat.router, prefix="/api/v1")
+app.include_router(memory.router, prefix="/api/v1/memory", tags=["memory"])
 
 
 @app.get("/health")

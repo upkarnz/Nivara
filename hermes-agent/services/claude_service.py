@@ -1,26 +1,21 @@
-import logging
+# hermes-agent/services/claude_service.py
+"""Backwards-compatible wrapper around ClaudeProvider."""
 import os
-from collections.abc import AsyncGenerator
-
-from anthropic import (
-    APIConnectionError,
-    APIStatusError,
-    AsyncAnthropic,
-    AuthenticationError,
-    RateLimitError,
-)
-
+from typing import AsyncGenerator
+from anthropic import AsyncAnthropic
+from providers.claude_provider import ClaudeProvider
 from models.message import ChatMessage
 
-logger = logging.getLogger(__name__)
-
-MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
-
+# Global provider instance - can be replaced in tests
+_provider = ClaudeProvider()
 _client: AsyncAnthropic | None = None
 
 
 def get_client() -> AsyncAnthropic:
-    """Return a lazily-initialized AsyncAnthropic client."""
+    """Return a lazily-initialized AsyncAnthropic client.
+
+    Kept for backwards compatibility with existing code.
+    """
     global _client
     if _client is None:
         api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -30,31 +25,34 @@ def get_client() -> AsyncAnthropic:
     return _client
 
 
-async def stream_claude_response(
-    messages: list[ChatMessage],
-    assistant_name: str = "Rocky",
-) -> AsyncGenerator[str, None]:
-    """Stream a Claude response as text chunks."""
-    system_prompt = f"You are {assistant_name}, a warm and caring AI companion."
-    anthropic_messages = [
-        {"role": m.role.value, "content": m.content} for m in messages
-    ]
+def get_provider() -> ClaudeProvider:
+    """Return the global ClaudeProvider instance."""
+    return _provider
 
-    try:
-        async with get_client().messages.stream(
-            model=MODEL,
-            max_tokens=1024,
-            system=system_prompt,
-            messages=anthropic_messages,
-        ) as stream:
-            async for text in stream.text_stream:
-                yield text
-    except RateLimitError:
-        logger.warning("Anthropic rate limit hit for user request")
-        raise
-    except AuthenticationError:
-        logger.error("Anthropic authentication failed - check ANTHROPIC_API_KEY")
-        raise
-    except (APIConnectionError, APIStatusError) as e:
-        logger.exception("Anthropic API error: %s", e)
-        raise
+
+async def stream_claude_response(
+    messages: list[dict] | list[ChatMessage],
+    assistant_name: str = "Nivara",
+) -> AsyncGenerator[str, None]:
+    """Stream a Claude response as text chunks.
+
+    Args:
+        messages: List of message dicts or ChatMessage objects.
+        assistant_name: Name of the AI assistant.
+
+    Yields:
+        Text chunks from the Claude API.
+    """
+    system = f"You are {assistant_name}, a helpful personal AI assistant."
+
+    # Convert ChatMessage objects to dicts for backwards compatibility
+    anthropic_messages = []
+    for msg in messages:
+        if isinstance(msg, ChatMessage):
+            anthropic_messages.append({"role": msg.role.value, "content": msg.content})
+        else:
+            anthropic_messages.append(msg)
+
+    provider = get_provider()
+    async for chunk in provider.stream_response(anthropic_messages, system):
+        yield chunk

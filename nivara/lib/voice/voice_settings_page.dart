@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/planner/data/google_calendar_repository.dart';
+import '../features/settings/presentation/widgets/model_selector_widget.dart';
 import 'tts_provider.dart';
 import 'voice_settings_provider.dart';
 import 'wake_word_engine.dart';
@@ -270,6 +271,27 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                 ),
               ),
               const _GoogleCalendarTile(key: Key('google_calendar_tile')),
+
+              const Divider(height: 32),
+
+              // ── AI Model section ─────────────────────────────────────────
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Text(
+                  'AI MODEL',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white60,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: ModelSelectorWidget(),
+              ),
+              const SizedBox(height: 16),
             ],
           );
         },

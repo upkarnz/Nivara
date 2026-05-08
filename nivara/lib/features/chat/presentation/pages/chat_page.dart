@@ -46,6 +46,11 @@ class ChatPage extends ConsumerWidget {
             onPressed: () => context.push('/planner'),
           ),
           IconButton(
+            icon: const Icon(Icons.psychology_outlined),
+            tooltip: 'My Memories',
+            onPressed: () => context.push('/memory'),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Voice settings',
             onPressed: () => context.push('/settings/voice'),

@@ -5,6 +5,7 @@ import '../features/auth/presentation/pages/sign_in_page.dart';
 import '../features/auth/presentation/pages/welcome_page.dart';
 import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/chat/presentation/pages/chat_page.dart';
+import '../features/memory/presentation/pages/memory_page.dart';
 import '../features/planner/presentation/pages/calendar_consent_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
 import '../features/planner/data/google_calendar_repository.dart';
@@ -57,6 +58,10 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(
         path: '/planner',
         builder: (context, state) => const PlannerPage(),
+      ),
+      GoRoute(
+        path: '/memory',
+        builder: (context, state) => const MemoryPage(),
       ),
       GoRoute(
         path: '/planner/calendar-consent',
