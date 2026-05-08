@@ -19,12 +19,16 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
     _load();
   }
 
-  Future<void> _load() async {
+  Future<String?> _getToken() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    final token = await user.getIdToken();
+    if (user == null) return null;
+    return user.getIdToken();
+  }
+
+  Future<void> _load() async {
+    final token = await _getToken();
     if (token == null) return;
-    ref.read(memoryNotifierProvider.notifier).loadMemories(token);
+    await ref.read(memoryNotifierProvider.notifier).loadMemories(token);
   }
 
   @override
@@ -49,9 +53,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               return MemoryTile(
                 memory: memory,
                 onDelete: () async {
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user == null) return;
-                  final token = await user.getIdToken();
+                  final token = await _getToken();
                   if (token == null) return;
                   ref
                       .read(memoryNotifierProvider.notifier)
