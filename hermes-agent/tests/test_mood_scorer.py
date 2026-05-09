@@ -46,3 +46,14 @@ async def test_score_mood_out_of_range_returns_none():
 async def test_score_mood_provider_exception_returns_none():
     result = await score_mood("hello", FakeProviderRaises())
     assert result is None
+
+
+class FakeProviderMarkdownWrapped:
+    async def score_mood(self, user_text: str) -> str:
+        return '```json\n{"score": 4, "label": "happy"}\n```'
+
+
+@pytest.mark.asyncio
+async def test_score_mood_markdown_fenced_json_is_parsed():
+    result = await score_mood("hello", FakeProviderMarkdownWrapped())
+    assert result == {"score": 4, "label": "happy"}

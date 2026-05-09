@@ -58,4 +58,5 @@ class OpenAIProvider(AIProvider):
                 {"role": "user", "content": user_text},
             ],
         )
-        return response.choices[0].message.content.strip()
+        content = response.choices[0].message.content or ""
+        return content.strip()
