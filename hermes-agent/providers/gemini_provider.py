@@ -22,6 +22,14 @@ class GeminiProvider(AIProvider):
             model_name=EXTRACTION_MODEL,
             system_instruction=EXTRACTION_SYSTEM,
         )
+        self._mood_model = genai.GenerativeModel(
+            model_name=EXTRACTION_MODEL,
+            system_instruction=(
+                "You are a mood scoring assistant. Given the user message below, "
+                "output ONLY a JSON object: {\"score\": <int 1-5>, \"label\": <short word>}. "
+                "No explanation, no markdown."
+            ),
+        )
 
     async def stream_response(
         self,
@@ -45,3 +53,7 @@ class GeminiProvider(AIProvider):
     async def extract_facts(self, prompt: str) -> str:
         response = await self._extract_model.generate_content_async(prompt)
         return response.text
+
+    async def score_mood(self, user_text: str) -> str:
+        response = await self._mood_model.generate_content_async(user_text)
+        return response.text.strip()

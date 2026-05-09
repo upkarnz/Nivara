@@ -11,6 +11,12 @@ Schema: {"facts": [{"content": str, "memory_type": str, "confidence": float}]}
 memory_type must be one of: personal_fact, preference, routine, relationship, decision, goal, emotional_signal, work_context
 confidence: 0.0-1.0. Only include facts with confidence >= 0.6. Return {"facts": []} if none found."""
 
+_MOOD_SYSTEM = (
+    "You are a mood scoring assistant. Given the user message, "
+    "output ONLY a JSON object with two fields: "
+    '"score" (integer 1-5) and "label" (short lowercase word). No markdown.'
+)
+
 
 class OpenAIProvider(AIProvider):
     def __init__(self) -> None:
@@ -42,3 +48,14 @@ class OpenAIProvider(AIProvider):
             ],
         )
         return response.choices[0].message.content
+
+    async def score_mood(self, user_text: str) -> str:
+        response = await self._client.chat.completions.create(
+            model=EXTRACTION_MODEL,
+            max_tokens=64,
+            messages=[
+                {"role": "system", "content": _MOOD_SYSTEM},
+                {"role": "user", "content": user_text},
+            ],
+        )
+        return response.choices[0].message.content.strip()

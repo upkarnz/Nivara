@@ -11,6 +11,14 @@ Schema: {"facts": [{"content": str, "memory_type": str, "confidence": float}]}
 memory_type must be one of: personal_fact, preference, routine, relationship, decision, goal, emotional_signal, work_context
 confidence: 0.0-1.0. Only include facts with confidence >= 0.6. Return {"facts": []} if none found."""
 
+MOOD_SYSTEM = (
+    "You are a mood scoring assistant. Given the user message below, "
+    "output ONLY a JSON object with two fields: "
+    '"score" (integer 1-5, where 1=very negative, 3=neutral, 5=very positive) '
+    'and "label" (a short lowercase word describing the mood, e.g. "anxious", "neutral", "happy"). '
+    "No explanation, no markdown, just raw JSON."
+)
+
 
 class ClaudeProvider(AIProvider):
     def __init__(self) -> None:
@@ -38,3 +46,12 @@ class ClaudeProvider(AIProvider):
             messages=[{"role": "user", "content": prompt}],
         )
         return response.content[0].text
+
+    async def score_mood(self, user_text: str) -> str:
+        response = await self._client.messages.create(
+            model=EXTRACTION_MODEL,
+            max_tokens=64,
+            system=MOOD_SYSTEM,
+            messages=[{"role": "user", "content": user_text}],
+        )
+        return response.content[0].text.strip()
