@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -8,6 +9,7 @@ from models.user import TokenData
 from providers.router import get_provider
 from services.memory_service import MemoryService
 from services.fact_extractor import FactExtractor
+from services.mood_scorer import score_mood
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -56,14 +58,27 @@ async def stream_chat(
 
     async def generate():
         full_response_parts: list[str] = []
+        mood_task = asyncio.create_task(score_mood(last_user_text, provider))
         try:
             async for chunk in provider.stream_response(messages, system_prompt):
                 full_response_parts.append(chunk)
                 yield f"data: {chunk}\n\n"
         except Exception as e:
             logger.error("Stream error: %s", e)
+            mood_task.cancel()
             yield "data: [ERROR]\n\n"
+        else:
+            try:
+                mood = await asyncio.wait_for(mood_task, timeout=5.0)
+                if mood is not None:
+                    yield f"data: __MOOD__{json.dumps(mood)}\n\n"
+            except (asyncio.TimeoutError, asyncio.CancelledError) as e:
+                logger.debug("Mood event skipped: %s", e)
+            except Exception as e:
+                logger.debug("Mood event skipped: %s", e)
         finally:
+            if not mood_task.done():
+                mood_task.cancel()
             full_response = "".join(full_response_parts)
             conversation_text = f"User: {last_user_text}\nAssistant: {full_response}"
             extractor = FactExtractor(provider=provider)
