@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../mood/domain/mood_entry.dart';
+import '../../../mood/presentation/providers/mood_provider.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../../planner/data/firestore_calendar_repository.dart';
 import '../../../planner/domain/event.dart';
@@ -47,14 +49,21 @@ class ChatNotifier extends _$ChatNotifier {
       assistantName: assistantName,
       aiModel: aiModel,
     )) {
-      buffer.write(chunk);
-      final updated = List<ChatMessage>.from(state);
-      updated[assistantIndex] = ChatMessage(
-        role: MessageRole.assistant,
-        content: buffer.toString(),
-        isStreaming: true,
-      );
-      state = updated;
+      switch (chunk) {
+        case TextChunk(:final text):
+          buffer.write(text);
+          final updated = List<ChatMessage>.from(state);
+          updated[assistantIndex] = ChatMessage(
+            role: MessageRole.assistant,
+            content: buffer.toString(),
+            isStreaming: true,
+          );
+          state = updated;
+        case MoodChunk(:final score, :final label):
+          await _saveMoodPassive(score, label);
+        case DoneChunk():
+          break;
+      }
     }
 
     final finalContent = buffer.toString();
@@ -104,6 +113,25 @@ class ChatNotifier extends _$ChatNotifier {
       return await repo.createEvent(event);
     } on Exception {
       return null;
+    }
+  }
+
+  Future<void> _saveMoodPassive(int score, String label) async {
+    try {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final entry = MoodEntry(
+        date: today,
+        score: score,
+        label: label,
+        source: MoodSource.passive,
+      );
+      final repo = ref.read(moodRepositoryProvider);
+      await repo.save(entry);
+      ref.invalidate(weekMoodProvider);
+      ref.invalidate(todayMoodProvider);
+    } on Exception {
+      // Non-critical: mood failure must not crash chat.
     }
   }
 }
