@@ -40,11 +40,18 @@ class CheckInCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(_emojis.length, (index) {
-              return GestureDetector(
-                onTap: () => _onEmojiTap(ref, index),
-                child: Text(
-                  _emojis[index],
-                  style: const TextStyle(fontSize: 28),
+              return Semantics(
+                label: _labels[index],
+                button: true,
+                child: GestureDetector(
+                  onTap: () async { await _onEmojiTap(ref, index); },
+                  child: SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(
+                      child: Text(_emojis[index], style: const TextStyle(fontSize: 28)),
+                    ),
+                  ),
                 ),
               );
             }),
@@ -65,10 +72,14 @@ class CheckInCard extends ConsumerWidget {
       label: label,
       source: MoodSource.checkin,
     );
-    final repo = ref.read(moodRepositoryProvider);
-    await repo.save(entry);
-    ref.invalidate(weekMoodProvider);
-    ref.invalidate(todayMoodProvider);
-    onDismiss();
+    try {
+      final repo = ref.read(moodRepositoryProvider);
+      await repo.save(entry);
+      ref.invalidate(weekMoodProvider);
+      ref.invalidate(todayMoodProvider);
+      onDismiss();
+    } catch (_) {
+      // Non-critical: save failure must not crash the card
+    }
   }
 }
