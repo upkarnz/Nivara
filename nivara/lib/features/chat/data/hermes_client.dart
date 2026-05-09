@@ -12,6 +12,39 @@ const _defaultBaseUrl = String.fromEnvironment(
   defaultValue: 'https://your-app.railway.app',
 );
 
+sealed class ChatChunk {
+  const ChatChunk();
+}
+
+class TextChunk extends ChatChunk {
+  const TextChunk(this.text);
+  final String text;
+}
+
+class MoodChunk extends ChatChunk {
+  const MoodChunk({required this.score, required this.label});
+  final int score;
+  final String label;
+}
+
+class DoneChunk extends ChatChunk {
+  const DoneChunk();
+}
+
+ChatChunk parseSseData(String data) {
+  if (data == '[DONE]') return const DoneChunk();
+  if (data.startsWith('__MOOD__')) {
+    final raw = data.substring('__MOOD__'.length);
+    try {
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+      final score = map['score'] as int;
+      final label = map['label'] as String;
+      if (score >= 1 && score <= 5) return MoodChunk(score: score, label: label);
+    } catch (_) {}
+  }
+  return TextChunk(data);
+}
+
 @riverpod
 HermesClient hermesClient(HermesClientRef ref) {
   return HermesClient(
@@ -30,8 +63,7 @@ class HermesClient {
   final String _baseUrl;
   final Future<String> Function()? _tokenProvider;
 
-  /// Streams text chunks from the Hermes SSE chat endpoint.
-  Stream<String> chatStream({
+  Stream<ChatChunk> chatStream({
     required List<Map<String, String>> messages,
     required String assistantName,
     String aiModel = 'claude',
@@ -67,11 +99,11 @@ class HermesClient {
           final trimmed = lines[i].trim();
           if (trimmed.startsWith('data: ')) {
             final data = trimmed.substring(6);
-            if (data == '[DONE]') return;
-            yield data;
+            final parsed = parseSseData(data);
+            yield parsed;
+            if (parsed is DoneChunk) return;
           }
         }
-        // Retain any incomplete last line in buffer for next chunk
         buffer.write(lines.last);
       }
     } finally {
