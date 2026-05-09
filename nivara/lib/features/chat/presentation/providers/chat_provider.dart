@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -43,6 +45,7 @@ class ChatNotifier extends _$ChatNotifier {
         .read(aiModelNotifierProvider.future)
         .catchError((_) => 'claude');
     final buffer = StringBuffer();
+    var moodSaved = false;
 
     await for (final chunk in client.chatStream(
       messages: hermesMessages,
@@ -60,7 +63,10 @@ class ChatNotifier extends _$ChatNotifier {
           );
           state = updated;
         case MoodChunk(:final score, :final label):
-          await _saveMoodPassive(score, label);
+          if (!moodSaved) {
+            moodSaved = true;
+            unawaited(_saveMoodPassive(score, label));
+          }
         case DoneChunk():
           break;
       }
