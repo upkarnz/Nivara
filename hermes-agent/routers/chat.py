@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import json
 import logging
 from fastapi import APIRouter, Depends
@@ -17,6 +18,8 @@ router = APIRouter()
 # Module-level singleton — tests patch this name directly via `routers.chat.memory_service`.
 # Initialised lazily on first real request to avoid Firebase calls at import time.
 memory_service: MemoryService | None = None
+
+_BACKGROUND_TASKS: set = set()
 
 MEMORY_INJECT_HEADER = "\n\n## What you know about the user\nUse this naturally in conversation, don't announce it:\n"
 
@@ -65,7 +68,10 @@ async def stream_chat(
                 yield f"data: {chunk}\n\n"
         except Exception as e:
             logger.error("Stream error: %s", e)
-            mood_task.cancel()
+            if not mood_task.done():
+                mood_task.cancel()
+                with contextlib.suppress(asyncio.CancelledError, Exception):
+                    await mood_task
             yield "data: [ERROR]\n\n"
         else:
             try:
@@ -79,10 +85,14 @@ async def stream_chat(
         finally:
             if not mood_task.done():
                 mood_task.cancel()
+                with contextlib.suppress(asyncio.CancelledError, Exception):
+                    await mood_task
             full_response = "".join(full_response_parts)
             conversation_text = f"User: {last_user_text}\nAssistant: {full_response}"
             extractor = FactExtractor(provider=provider)
-            asyncio.create_task(_extract_and_save(uid, conversation_text, svc, extractor))
+            task = asyncio.create_task(_extract_and_save(uid, conversation_text, svc, extractor))
+            _BACKGROUND_TASKS.add(task)
+            task.add_done_callback(_BACKGROUND_TASKS.discard)
 
     return StreamingResponse(generate(), media_type="text/event-stream")
 

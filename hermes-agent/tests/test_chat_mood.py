@@ -35,12 +35,13 @@ def test_mood_event_emitted_on_success(client):
     with patch("routers.chat.get_provider") as mock_get_provider:
         mock_provider = MagicMock()
         mock_provider.stream_response = MagicMock(return_value=fake_stream([], ""))
-        mock_provider.score_mood = AsyncMock(
-            return_value='{"score": 5, "label": "happy"}'
-        )
         mock_get_provider.return_value = mock_provider
 
-        with patch("routers.chat.memory_service") as mock_mem:
+        with patch("routers.chat.memory_service") as mock_mem, \
+             patch(
+                 "routers.chat.score_mood",
+                 AsyncMock(return_value={"score": 5, "label": "happy"}),
+             ):
             mock_mem.retrieve_memories = AsyncMock(return_value=[])
             mock_mem.save_memory = AsyncMock()
 
@@ -55,25 +56,26 @@ def test_mood_event_emitted_on_success(client):
     assert mood_marker in body
     assert body.index(mood_marker) > body.index("data:  there")
     # Parse the mood payload
-    mood_line = [ln for ln in body.split("\n") if ln.startswith("data: __MOOD__")][0]
+    mood_line = next(
+        ln for ln in body.split("\n") if ln.startswith("data: __MOOD__")
+    )
     payload = mood_line[len("data: __MOOD__"):]
     parsed = json.loads(payload)
     assert parsed == {"score": 5, "label": "happy"}
 
 
 def test_no_mood_event_when_scorer_returns_none(client):
-    """If score_mood returns invalid JSON (mood scorer returns None), no __MOOD__ event."""
+    """If score_mood returns None (e.g. invalid JSON from provider), no __MOOD__ event."""
     async def fake_stream(messages, system):
         yield "Hi"
 
     with patch("routers.chat.get_provider") as mock_get_provider:
         mock_provider = MagicMock()
         mock_provider.stream_response = MagicMock(return_value=fake_stream([], ""))
-        # Returns garbage -> mood_scorer returns None
-        mock_provider.score_mood = AsyncMock(return_value="not json")
         mock_get_provider.return_value = mock_provider
 
-        with patch("routers.chat.memory_service") as mock_mem:
+        with patch("routers.chat.memory_service") as mock_mem, \
+             patch("routers.chat.score_mood", AsyncMock(return_value=None)):
             mock_mem.retrieve_memories = AsyncMock(return_value=[])
             mock_mem.save_memory = AsyncMock()
 
@@ -85,17 +87,20 @@ def test_no_mood_event_when_scorer_returns_none(client):
 
 
 def test_no_mood_event_when_scorer_raises(client):
-    """If provider.score_mood raises, no __MOOD__ event is emitted but stream completes."""
+    """If score_mood raises, no __MOOD__ event is emitted but stream completes."""
     async def fake_stream(messages, system):
         yield "Hey"
 
     with patch("routers.chat.get_provider") as mock_get_provider:
         mock_provider = MagicMock()
         mock_provider.stream_response = MagicMock(return_value=fake_stream([], ""))
-        mock_provider.score_mood = AsyncMock(side_effect=RuntimeError("boom"))
         mock_get_provider.return_value = mock_provider
 
-        with patch("routers.chat.memory_service") as mock_mem:
+        with patch("routers.chat.memory_service") as mock_mem, \
+             patch(
+                 "routers.chat.score_mood",
+                 AsyncMock(side_effect=RuntimeError("scorer error")),
+             ):
             mock_mem.retrieve_memories = AsyncMock(return_value=[])
             mock_mem.save_memory = AsyncMock()
 
