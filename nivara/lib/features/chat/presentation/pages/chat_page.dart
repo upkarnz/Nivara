@@ -13,6 +13,7 @@ import '../widgets/message_bubble.dart';
 import '../../../../../voice/voice_fab.dart';
 import '../../../mood/presentation/widgets/check_in_card.dart';
 import '../../../mood/presentation/providers/mood_provider.dart';
+import '../../../../services/mood_notification_service.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({super.key});
@@ -95,7 +96,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
+            onPressed: () async {
+              await MoodNotificationService.cancelReminder();
+              await ref.read(authRepositoryProvider).signOut();
+            },
           ),
         ],
       ),
