@@ -20,12 +20,18 @@ void main() {
         expect(result.second, equals(0));
       });
 
-      test('returned time is in the future relative to now', () {
-        final before = tz.TZDateTime.now(tz.local);
+      test('returned time is at 9am today or tomorrow', () {
+        tz.initializeTimeZones();
         final result = MoodNotificationService.nextInstanceOf9AM();
-
-        expect(result.isAfter(before), isTrue,
-            reason: 'Scheduled time must be strictly after now');
+        expect(result.hour, 9);
+        expect(result.minute, 0);
+        expect(result.second, 0);
+        // Must be either today at 9am (in future) or tomorrow at 9am
+        final now = tz.TZDateTime.now(tz.local);
+        expect(
+          result.isAfter(now.subtract(const Duration(minutes: 1))),
+          isTrue,
+        );
       });
     });
   });

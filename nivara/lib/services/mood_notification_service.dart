@@ -46,10 +46,30 @@ class MoodNotificationService {
     await _plugin.cancel(_notificationId);
   }
 
+  static Future<bool> requestPermissions() async {
+    final ios = _plugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+
+    final iosGranted = await ios?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        ) ??
+        true; // non-iOS defaults to granted
+
+    final androidGranted =
+        await android?.requestNotificationsPermission() ?? true;
+
+    return iosGranted && androidGranted;
+  }
+
   @visibleForTesting
   static tz.TZDateTime nextInstanceOf9AM() => _nextInstanceOf9AM();
 
   static tz.TZDateTime _nextInstanceOf9AM() {
+    tz.initializeTimeZones(); // idempotent — safe to call multiple times
     final now = tz.TZDateTime.now(tz.local);
     var scheduled =
         tz.TZDateTime(tz.local, now.year, now.month, now.day, 9);

@@ -12,8 +12,15 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await MoodNotificationService.init();
-  await MoodNotificationService.scheduleDailyReminder();
+  try {
+    await MoodNotificationService.init();
+    final granted = await MoodNotificationService.requestPermissions();
+    if (granted) {
+      await MoodNotificationService.scheduleDailyReminder();
+    }
+  } on Exception catch (e) {
+    debugPrint('Notification setup failed: $e');
+  }
   runApp(const ProviderScope(child: NivaraApp()));
 }
 
