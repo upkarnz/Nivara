@@ -52,9 +52,9 @@ Mood values are integers 1–5 (1 = very low, 5 = very high).
 
 | Rolling 7-day Average | Tone Hint Injected |
 |-----------------------|--------------------|
-| ≤ 2.0 | `"Be warm and gentle. Avoid upbeat openers."` |
-| 2.1 – 2.9 | `"Keep your tone calm and measured."` |
-| ≥ 3.0 | `null` — no injection, Nivara uses its default persona |
+| `avg <= 2.0` | `"Be warm and gentle. Avoid upbeat openers."` |
+| `avg > 2.0 && avg < 3.0` | `"Keep your tone calm and measured."` |
+| `avg >= 3.0` | `null` — no injection, Nivara uses its default persona |
 
 **Why these thresholds?** Values 1–2 represent genuinely low mood. Values 3–5 are neutral to positive — Nivara's default tone already works well there. The 2.1–2.9 band catches borderline cases with a lighter touch.
 
