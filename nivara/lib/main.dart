@@ -5,12 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_theme.dart';
 import 'firebase_options.dart';
 import 'router/app_router.dart';
+import 'services/mood_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await MoodNotificationService.init();
+  await MoodNotificationService.scheduleDailyReminder();
   runApp(const ProviderScope(child: NivaraApp()));
 }
 
