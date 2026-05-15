@@ -84,7 +84,7 @@ Widget _buildApp({
   // initialisation is needed.
   final mockFirebaseAuth = MockFirebaseAuth();
   when(mockFirebaseAuth.authStateChanges())
-      .thenAnswer((_) => const Stream.empty());
+      .thenAnswer((_) => Stream.value(null));
   final fakeAuthRepo = AuthRepository(auth: mockFirebaseAuth);
 
   return ProviderScope(

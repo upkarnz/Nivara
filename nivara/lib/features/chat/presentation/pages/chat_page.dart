@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,15 +27,22 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkMorningCheckIn());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => unawaited(_checkMorningCheckIn()),
+    );
   }
 
   Future<void> _checkMorningCheckIn() async {
-    final now = DateTime.now();
-    if (now.hour >= 12) return;
-    final today = await ref.read(todayMoodProvider.future);
-    if (today == null && mounted) {
-      setState(() => _showCheckIn = true);
+    try {
+      final now = DateTime.now();
+      if (now.hour >= 12) return;
+      if (!mounted) return;
+      final today = await ref.read(todayMoodProvider.future);
+      if (today == null && mounted) {
+        setState(() => _showCheckIn = true);
+      }
+    } catch (_) {
+      // Non-critical: check-in prompt is best-effort; silently skip on error
     }
   }
 
