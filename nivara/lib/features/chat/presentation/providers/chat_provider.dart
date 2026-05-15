@@ -32,10 +32,27 @@ class ChatNotifier extends _$ChatNotifier {
     state = [...state, placeholder];
 
     final assistantIndex = state.length - 1;
-    final hermesMessages = state
+
+    // Build conversation history (exclude the streaming placeholder).
+    final baseMessages = state
         .where((m) => !m.isStreaming)
         .map((m) => m.toHermesMap())
         .toList();
+
+    // Silently read tone hint — any failure defaults to null (no injection).
+    String? toneHint;
+    try {
+      toneHint = await ref.read(moodToneProvider.future);
+    } catch (_) {
+      // Degrade gracefully: use default Nivara tone.
+    }
+
+    // Prepend system message only when a hint is available.
+    // The hint is never stored in state and never shown in the UI.
+    final hermesMessages = [
+      if (toneHint != null) {'role': 'system', 'content': toneHint},
+      ...baseMessages,
+    ];
 
     final config = await ref.read(assistantConfigProvider.future);
     final assistantName = config?.name ?? 'Rocky';
