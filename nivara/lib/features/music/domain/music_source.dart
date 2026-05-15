@@ -1,0 +1,1 @@
+enum MusicSource { local, spotify }
