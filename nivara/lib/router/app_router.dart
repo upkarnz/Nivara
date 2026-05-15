@@ -9,6 +9,7 @@ import '../features/memory/presentation/pages/memory_page.dart';
 import '../features/planner/presentation/pages/calendar_consent_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
 import '../features/planner/data/google_calendar_repository.dart';
+import '../features/mood/presentation/pages/mood_board_page.dart';
 import '../features/profile/presentation/pages/assistant_setup_page.dart';
 import '../features/profile/presentation/pages/profile_setup_page.dart';
 import '../voice/voice_settings_page.dart';
@@ -62,6 +63,10 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(
         path: '/memory',
         builder: (context, state) => const MemoryPage(),
+      ),
+      GoRoute(
+        path: '/mood',
+        builder: (context, state) => const MoodBoardPage(),
       ),
       GoRoute(
         path: '/planner/calendar-consent',

@@ -9,9 +9,33 @@ import '../providers/chat_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/message_bubble.dart';
 import '../../../../../voice/voice_fab.dart';
+import '../../../mood/presentation/widgets/check_in_card.dart';
+import '../../../mood/presentation/providers/mood_provider.dart';
 
-class ChatPage extends ConsumerWidget {
+class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({super.key});
+
+  @override
+  ConsumerState<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends ConsumerState<ChatPage> {
+  bool _showCheckIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkMorningCheckIn());
+  }
+
+  Future<void> _checkMorningCheckIn() async {
+    final now = DateTime.now();
+    if (now.hour >= 12) return;
+    final today = await ref.read(todayMoodProvider.future);
+    if (today == null && mounted) {
+      setState(() => _showCheckIn = true);
+    }
+  }
 
   String _greeting(AssistantConfig? config) {
     final name = config?.name ?? 'Rocky';
@@ -25,7 +49,7 @@ class ChatPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final messages = ref.watch(chatNotifierProvider);
     final configAsync = ref.watch(assistantConfigProvider);
     final isStreaming = messages.isNotEmpty && messages.last.isStreaming;
@@ -46,6 +70,11 @@ class ChatPage extends ConsumerWidget {
             onPressed: () => context.push('/planner'),
           ),
           IconButton(
+            icon: const Icon(Icons.mood_outlined),
+            tooltip: 'Mood',
+            onPressed: () => context.push('/mood'),
+          ),
+          IconButton(
             icon: const Icon(Icons.psychology_outlined),
             tooltip: 'My Memories',
             onPressed: () => context.push('/memory'),
@@ -63,6 +92,13 @@ class ChatPage extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          if (_showCheckIn)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: CheckInCard(
+                onDismiss: () => setState(() => _showCheckIn = false),
+              ),
+            ),
           Expanded(
             child: messages.isEmpty
                 ? Center(
