@@ -12,6 +12,10 @@ import 'wake_word_engine.dart';
 import 'wake_word_service.dart';
 import 'stt_wake_word_service.dart';
 import 'porcupine_wake_word_service.dart';
+import '../features/music/domain/mood_category.dart';
+import '../features/music/presentation/providers/mood_playlist_provider.dart';
+import '../features/music/presentation/providers/music_player_notifier.dart';
+import 'music_command.dart';
 
 // ---------------------------------------------------------------------------
 // Provider
@@ -109,9 +113,43 @@ class VoiceNotifier extends Notifier<VoiceState> {
       return;
     }
     state = VoiceState.processing;
-    // Speak a simple acknowledgement — the actual AI response integration
-    // will be wired in a subsequent task.
+
+    // Attempt music command first — no LLM round-trip needed.
+    final musicCmd = matchMusicCommand(transcript);
+    if (musicCmd != null) {
+      await _executeMusicCommand(musicCmd);
+      return;
+    }
+
+    // No music command — fall through to normal AI processing.
     await _speak('Processing: $transcript');
+  }
+
+  Future<void> _executeMusicCommand(MusicCommand cmd) async {
+    final notifier = ref.read(musicPlayerNotifierProvider.notifier);
+    try {
+      switch (cmd) {
+        case MusicCommand.play:
+          // Fetch current mood playlist then trigger auto-play.
+          final playlist = await ref.read(moodPlaylistProvider.future);
+          if (playlist != null) await notifier.autoPlayForMood(playlist);
+        case MusicCommand.pause:
+          await notifier.pause();
+        case MusicCommand.resume:
+          await notifier.resume();
+        case MusicCommand.skip:
+          await notifier.skip();
+        case MusicCommand.stop:
+          await notifier.stop();
+        case MusicCommand.playCalmCategory:
+          await notifier.playForCategory(MoodCategory.calm);
+        case MusicCommand.playEnergizedCategory:
+          await notifier.playForCategory(MoodCategory.energized);
+      }
+    } catch (_) {
+      // Non-critical: voice command failure must not crash the assistant.
+    }
+    await _speak('On it.');
   }
 
   Future<void> _speak(String text) async {
