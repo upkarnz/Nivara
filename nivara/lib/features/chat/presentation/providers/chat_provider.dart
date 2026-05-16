@@ -5,6 +5,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../mood/domain/mood_entry.dart';
 import '../../../mood/presentation/providers/mood_provider.dart';
+import '../../../music/domain/mood_category.dart';
+import '../../../music/presentation/providers/mood_playlist_provider.dart';
+import '../../../music/presentation/providers/music_player_notifier.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../../planner/data/firestore_calendar_repository.dart';
 import '../../../planner/domain/event.dart';
@@ -47,10 +50,28 @@ class ChatNotifier extends _$ChatNotifier {
       // Degrade gracefully: use default Nivara tone.
     }
 
-    // Prepend system message only when a hint is available.
-    // The hint is never stored in state and never shown in the UI.
+    // Check whether to append a proactive music suggestion hint.
+    // Only injected when: mood playlist is calm AND no track is currently playing.
+    String? musicSuggestionHint;
+    try {
+      final moodPlaylist = await ref.read(moodPlaylistProvider.future);
+      final isCalm = moodPlaylist?.moodCategory == MoodCategory.calm;
+      final isPlaying =
+          ref.read(musicPlayerNotifierProvider).currentTrack != null;
+      if (isCalm && !isPlaying) {
+        musicSuggestionHint =
+            'If contextually appropriate, suggest the user play some music.';
+      }
+    } catch (_) {
+      // Non-critical — degrade gracefully.
+    }
+
+    // Prepend system messages only when hints are available.
+    // Hints are never stored in state and never shown in the UI.
     final hermesMessages = [
       if (toneHint != null) {'role': 'system', 'content': toneHint},
+      if (musicSuggestionHint != null)
+        {'role': 'system', 'content': musicSuggestionHint},
       ...baseMessages,
     ];
 
