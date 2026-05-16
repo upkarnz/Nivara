@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../features/planner/data/google_calendar_repository.dart';
 import '../features/settings/presentation/widgets/model_selector_widget.dart';
+import '../features/subscription/presentation/providers/subscription_providers.dart';
+import '../features/subscription/presentation/widgets/paywall_sheet.dart';
 import 'tts_provider.dart';
 import 'voice_settings_provider.dart';
 import 'wake_word_engine.dart';
@@ -45,6 +47,8 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final settingsAsync = ref.watch(voiceSettingsProvider);
+    final tierConfig = ref.watch(tierConfigProvider);
+    final elevenLabsUnlocked = tierConfig.elevenLabsEnabled;
 
     return Scaffold(
       appBar: AppBar(
@@ -195,23 +199,38 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                 },
               ),
 
-              // ── ElevenLabs option ────────────────────────────────────────
+              // ── ElevenLabs option (Premium only) ────────────────────────
               RadioListTile<TtsProvider>(
                 value: TtsProvider.elevenLabs,
                 groupValue: settings.ttsProvider,
-                title: const Text('ElevenLabs (cloud)'),
-                subtitle: const Text(
-                  'High-quality AI voice synthesis. Requires a free API key '
-                  'from elevenlabs.io.',
-                  style: TextStyle(fontSize: 12, color: Colors.white54),
+                title: Row(
+                  children: [
+                    const Text('ElevenLabs (cloud)'),
+                    if (!elevenLabsUnlocked) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.lock, size: 14, color: Colors.amber),
+                    ],
+                  ],
                 ),
-                onChanged: (v) {
-                  if (v != null) {
-                    ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setTtsProvider(v);
-                  }
-                },
+                subtitle: Text(
+                  elevenLabsUnlocked
+                      ? 'High-quality AI voice synthesis. Requires a free API key from elevenlabs.io.'
+                      : 'Available on Premium. Tap to upgrade.',
+                  style: const TextStyle(fontSize: 12, color: Colors.white54),
+                ),
+                onChanged: elevenLabsUnlocked
+                    ? (v) {
+                        if (v != null) {
+                          ref
+                              .read(voiceSettingsProvider.notifier)
+                              .setTtsProvider(v);
+                        }
+                      }
+                    : (_) => showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) => const PaywallSheet(),
+                        ),
               ),
 
               // ── ElevenLabs API key field (conditional) ───────────────────

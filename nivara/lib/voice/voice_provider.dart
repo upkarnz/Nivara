@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -15,6 +17,8 @@ import 'porcupine_wake_word_service.dart';
 import '../features/music/domain/mood_category.dart';
 import '../features/music/presentation/providers/mood_playlist_provider.dart';
 import '../features/music/presentation/providers/music_player_notifier.dart';
+import '../features/subscription/data/wake_word_quota_repository.dart';
+import '../features/subscription/presentation/providers/subscription_providers.dart';
 import 'music_command.dart';
 
 // ---------------------------------------------------------------------------
@@ -85,8 +89,31 @@ class VoiceNotifier extends Notifier<VoiceState> {
     return SttWakeWordService();
   }
 
-  void _onWakeWordDetected() {
+  Future<void> _onWakeWordDetected() async {
     if (state != VoiceState.idle) return;
+
+    // ── Wake word quota check ──────────────────────────────────────────────
+    // Free: lifetime limit of 5. Pro: monthly limit of 30. Premium: unlimited.
+    final tierConfig = ref.read(tierConfigProvider);
+    final wakeWordLimit = tierConfig.wakeWordLimit;
+    if (wakeWordLimit != null) {
+      try {
+        final repo = ref.read(wakeWordQuotaRepositoryProvider);
+        if (tierConfig.wakeWordLimitIsMonthly) {
+          await repo.resetIfNewMonthlyPeriod();
+        }
+        final usage = await repo.getUsage();
+        if (usage.activationsUsed >= wakeWordLimit) {
+          // Quota exhausted — silently ignore the wake word.
+          return;
+        }
+        // Increment before listening so concurrent calls don't over-count.
+        await repo.incrementActivation();
+      } catch (_) {
+        // Non-critical: if quota check fails, allow the activation through.
+      }
+    }
+
     state = VoiceState.listening;
     _startListening();
   }
@@ -163,7 +190,7 @@ class VoiceNotifier extends Notifier<VoiceState> {
   // ---------------------------------------------------------------------------
 
   /// Manually triggers a listening session (mirrors wake-word detection).
-  void startListening() => _onWakeWordDetected();
+  void startListening() => unawaited(_onWakeWordDetected());
 
   /// Stops everything and returns to idle.
   Future<void> stopAll() async {

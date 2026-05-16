@@ -5,6 +5,8 @@ import 'package:nivara/features/music/domain/music_track.dart';
 import 'package:nivara/features/music/presentation/providers/mood_playlist_provider.dart';
 import 'package:nivara/features/music/presentation/providers/music_player_notifier.dart';
 import 'package:nivara/features/music/presentation/providers/music_player_state.dart';
+import 'package:nivara/features/subscription/presentation/providers/subscription_providers.dart';
+import 'package:nivara/features/subscription/presentation/widgets/paywall_sheet.dart';
 
 /// Full-screen music player page.
 ///
@@ -19,6 +21,41 @@ class MusicPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tierConfig = ref.watch(tierConfigProvider);
+
+    // Gate: music is a paid feature. Show paywall for Free tier.
+    if (!tierConfig.musicEnabled) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Music'),
+          backgroundColor: Colors.transparent,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.music_off, size: 64, color: Colors.white38),
+              const SizedBox(height: 16),
+              const Text(
+                'Music is available on Pro and Premium plans.',
+                style: TextStyle(color: Colors.white60),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => const PaywallSheet(),
+                ),
+                child: const Text('Upgrade'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final state = ref.watch(musicPlayerNotifierProvider);
     final notifier = ref.read(musicPlayerNotifierProvider.notifier);
     final playlistAsync = ref.watch(moodPlaylistProvider);
