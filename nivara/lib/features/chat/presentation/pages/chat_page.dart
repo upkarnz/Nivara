@@ -7,6 +7,11 @@ import 'package:go_router/go_router.dart';
 import '../../../../shared/models/user_profile.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
+import '../../../subscription/domain/subscription_tier.dart';
+import '../../../subscription/presentation/providers/subscription_providers.dart';
+import '../../../subscription/presentation/widgets/paywall_sheet.dart';
+import '../../../subscription/presentation/widgets/quota_banner.dart';
+import '../../../subscription/presentation/widgets/quota_indicator.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/message_bubble.dart';
@@ -63,6 +68,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final messages = ref.watch(chatNotifierProvider);
     final configAsync = ref.watch(assistantConfigProvider);
     final isStreaming = messages.isNotEmpty && messages.last.isStreaming;
+    final quotaState = ref.watch(quotaProvider).valueOrNull;
+    final tier =
+        ref.watch(subscriptionProvider).valueOrNull ?? SubscriptionTier.free;
 
     return Scaffold(
       floatingActionButton: const VoiceFab(),
@@ -105,6 +113,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
       body: Column(
         children: [
+          // Grace message amber banner — visible only when inGrace=true
+          if (quotaState != null) QuotaBanner(quotaState: quotaState),
           if (_showCheckIn)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -139,9 +149,24 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           ChatInputBar(
             enabled: !isStreaming,
-            onSend: (text) =>
-                ref.read(chatNotifierProvider.notifier).sendMessage(text),
+            onSend: (text) {
+              if (quotaState?.exhausted == true) {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => const PaywallSheet(),
+                );
+                return;
+              }
+              ref.read(chatNotifierProvider.notifier).sendMessage(text);
+            },
           ),
+          // Message counter — visible on Free tier only
+          if (quotaState != null)
+            QuotaIndicator(
+              quotaState: quotaState,
+              isFree: tier == SubscriptionTier.free,
+            ),
           const SizedBox(height: 8),
         ],
       ),
