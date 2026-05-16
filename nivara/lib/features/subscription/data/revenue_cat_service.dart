@@ -1,4 +1,6 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import '../domain/subscription_tier.dart';
 
 /// Abstract interface for RevenueCat subscription management.
@@ -27,6 +29,39 @@ class RevenueCatServiceStub implements RevenueCatService {
 
   @override
   Future<void> restorePurchases() async {}
+}
+
+/// Production implementation backed by the RevenueCat SDK.
+///
+/// Entitlement IDs must match those configured in the RevenueCat dashboard:
+/// - `"pro"`     → [SubscriptionTier.pro]
+/// - `"premium"` → [SubscriptionTier.premium]
+class RevenueCatServiceImpl implements RevenueCatService {
+  @override
+  Future<void> init(String apiKey) async {
+    await Purchases.setLogLevel(LogLevel.warn);
+    final configuration = PurchasesConfiguration(apiKey);
+    await Purchases.configure(configuration);
+  }
+
+  @override
+  Future<SubscriptionTier> getCurrentTier() async {
+    try {
+      final info = await Purchases.getCustomerInfo();
+      final entitlements = info.entitlements.active;
+      if (entitlements.containsKey('premium')) return SubscriptionTier.premium;
+      if (entitlements.containsKey('pro')) return SubscriptionTier.pro;
+      return SubscriptionTier.free;
+    } on PlatformException {
+      // Network or SDK errors — degrade gracefully to Free.
+      return SubscriptionTier.free;
+    }
+  }
+
+  @override
+  Future<void> restorePurchases() async {
+    await Purchases.restorePurchases();
+  }
 }
 
 /// Riverpod provider for [RevenueCatService].
