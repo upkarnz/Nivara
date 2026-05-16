@@ -2,16 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _prefsKey = 'selected_ai_model';
-const _defaultModel = 'claude';
 
-// Canonical model IDs (will be migrated to gemini_flash default in Task 8).
+/// Canonical model IDs used throughout the app.
 const kModelGeminiFlash = 'gemini_flash';
 const kModelGpt4oMini = 'gpt4o_mini';
 const kModelClaudeHaiku = 'claude_haiku';
 const kModelClaudeSonnet = 'claude_sonnet';
 const kModelGpt4o = 'gpt4o';
 
-/// The default model ID used across the app.
+/// The default model ID — Gemini Flash gives the highest message quota.
 const kDefaultModel = kModelGeminiFlash;
 
 class AiModelNotifier extends AsyncNotifier<String> {
@@ -20,7 +19,7 @@ class AiModelNotifier extends AsyncNotifier<String> {
   @override
   Future<String> build() async {
     _prefs = await SharedPreferences.getInstance();
-    return _prefs.getString(_prefsKey) ?? _defaultModel;
+    return _prefs.getString(_prefsKey) ?? kDefaultModel;
   }
 
   Future<void> setModel(String model) async {
