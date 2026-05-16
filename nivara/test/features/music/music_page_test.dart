@@ -12,6 +12,8 @@ import 'package:nivara/features/music/presentation/pages/music_page.dart';
 import 'package:nivara/features/music/presentation/providers/music_player_notifier.dart';
 import 'package:nivara/features/music/presentation/providers/music_player_state.dart';
 import 'package:nivara/features/music/presentation/providers/music_providers.dart';
+import 'package:nivara/features/subscription/domain/subscription_tier.dart';
+import 'package:nivara/features/subscription/presentation/providers/subscription_providers.dart';
 
 import 'music_player_notifier_test.mocks.dart';
 
@@ -68,6 +70,7 @@ Widget _wrap({
       musicRepositoryProvider.overrideWithValue(mockRepo),
       musicPlayerNotifierProvider.overrideWith(notifierFactory),
       weekMoodProvider.overrideWith((_) async => <MoodEntry?>[]),
+      tierConfigProvider.overrideWithValue(TierConfig.forTier(SubscriptionTier.pro)),
     ],
     child: MaterialApp.router(
       routerConfig: GoRouter(routes: [

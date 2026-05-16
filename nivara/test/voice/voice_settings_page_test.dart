@@ -7,11 +7,19 @@ import 'package:nivara/voice/tts_provider.dart';
 import 'package:nivara/voice/voice_settings_provider.dart';
 import 'package:nivara/voice/voice_settings_page.dart';
 import 'package:nivara/voice/wake_word_engine.dart';
+import 'package:nivara/features/subscription/domain/subscription_tier.dart';
+import 'package:nivara/features/subscription/presentation/providers/subscription_providers.dart';
 
-Widget _buildPage(VoiceSettings initial) => ProviderScope(
+Widget _buildPage(VoiceSettings initial, {bool elevenLabsUnlocked = false}) =>
+    ProviderScope(
       overrides: [
         voiceSettingsProvider.overrideWith(
           () => _FakeSettingsNotifier(initial),
+        ),
+        tierConfigProvider.overrideWithValue(
+          TierConfig.forTier(
+            elevenLabsUnlocked ? SubscriptionTier.premium : SubscriptionTier.free,
+          ),
         ),
       ],
       child: const MaterialApp(home: VoiceSettingsPage()),
@@ -155,14 +163,16 @@ void main() {
     testWidgets('ElevenLabs key field shown when ElevenLabs selected',
         (tester) async {
       await tester.pumpWidget(_buildPage(
-          const VoiceSettings(ttsProvider: TtsProvider.elevenLabs)));
+          const VoiceSettings(ttsProvider: TtsProvider.elevenLabs),
+          elevenLabsUnlocked: true));
       await tester.pump();
 
       expect(find.byKey(const Key('elevenlabs_key_field')), findsOneWidget);
     });
 
     testWidgets('tapping ElevenLabs radio shows key field', (tester) async {
-      await tester.pumpWidget(_buildPage(const VoiceSettings()));
+      await tester.pumpWidget(
+          _buildPage(const VoiceSettings(), elevenLabsUnlocked: true));
       await tester.pump();
 
       await tester.tap(find.text('ElevenLabs (cloud)'));
