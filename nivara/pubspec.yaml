@@ -52,3 +52,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/music/calm/
+    - assets/music/neutral/
+    - assets/music/energized/
