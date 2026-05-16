@@ -39,9 +39,23 @@ class QuotaDoc {
       'QuotaDoc(used=$messagesUsed, grace=$graceUsed, model=$model, start=$periodStart)';
 }
 
+/// Abstract interface for quota read/write operations.
+/// Concrete implementation: [FirestoreQuotaRepository].
+/// Tests can extend this directly without needing Firebase.
+abstract class QuotaRepository {
+  const QuotaRepository();
+
+  Stream<QuotaDoc> getQuota();
+  Future<void> resetIfNewPeriod();
+  Future<void> incrementMessage();
+  Future<void> incrementGrace();
+  Future<void> setModel(String model);
+}
+
+/// Firestore-backed implementation of [QuotaRepository].
 /// Reads and writes the user's quota document at `users/{uid}/quota/current`.
-class QuotaRepository {
-  QuotaRepository({
+class FirestoreQuotaRepository extends QuotaRepository {
+  FirestoreQuotaRepository({
     required FirebaseFirestore firestore,
     required String uid,
   }) : _doc = firestore
@@ -53,6 +67,7 @@ class QuotaRepository {
   final DocumentReference<Map<String, dynamic>> _doc;
 
   /// Stream of quota snapshots. Emits on every remote change.
+  @override
   Stream<QuotaDoc> getQuota() {
     return _doc.snapshots().map((snap) {
       final data = snap.data();
@@ -70,6 +85,7 @@ class QuotaRepository {
   }
 
   /// Resets `messagesUsed` and `graceUsed` to 0 if a new billing period started.
+  @override
   Future<void> resetIfNewPeriod() async {
     final snap = await _doc.get();
     final data = snap.data();
@@ -94,14 +110,17 @@ class QuotaRepository {
   }
 
   /// Increments the normal message counter by 1.
+  @override
   Future<void> incrementMessage() =>
       _doc.update({'messagesUsed': FieldValue.increment(1)});
 
   /// Increments the grace message counter by 1.
+  @override
   Future<void> incrementGrace() =>
       _doc.update({'graceUsed': FieldValue.increment(1)});
 
   /// Persists the user's chosen model override to Firestore.
+  @override
   Future<void> setModel(String model) =>
       _doc.update({'model': model});
 }
@@ -110,7 +129,7 @@ class QuotaRepository {
 final quotaRepositoryProvider = Provider<QuotaRepository>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) throw StateError('No authenticated user');
-  return QuotaRepository(
+  return FirestoreQuotaRepository(
     firestore: FirebaseFirestore.instance,
     uid: user.uid,
   );

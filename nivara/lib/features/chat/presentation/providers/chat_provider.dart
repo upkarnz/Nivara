@@ -12,6 +12,8 @@ import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../../planner/data/firestore_calendar_repository.dart';
 import '../../../planner/domain/event.dart';
 import '../../../settings/presentation/providers/ai_model_provider.dart';
+import '../../../subscription/data/quota_repository.dart';
+import '../../../subscription/presentation/providers/subscription_providers.dart';
 import '../../data/hermes_client.dart';
 import '../../domain/event_parser.dart';
 import '../../domain/message.dart';
@@ -24,6 +26,20 @@ class ChatNotifier extends _$ChatNotifier {
   List<ChatMessage> build() => [];
 
   Future<void> sendMessage(String text) async {
+    // ── Quota check ──────────────────────────────────────────────────────────
+    // Use .future so we wait for the first stream emission in tests and prod.
+    QuotaState? quotaState;
+    try {
+      quotaState = await ref.read(quotaProvider.future);
+    } catch (_) {
+      // If quota state is unavailable, allow the message through.
+    }
+    if (quotaState != null && quotaState.exhausted) {
+      // UI (ChatPage) shows PaywallSheet. Notifier returns early.
+      return;
+    }
+    final isGrace = quotaState?.inGrace == true;
+
     final userMsg = ChatMessage(role: MessageRole.user, content: text);
     state = [...state, userMsg];
 
@@ -81,7 +97,7 @@ class ChatNotifier extends _$ChatNotifier {
     final client = ref.read(hermesClientProvider);
     final aiModel = await ref
         .read(aiModelNotifierProvider.future)
-        .catchError((_) => 'claude');
+        .catchError((_) => 'gemini_flash');
     final buffer = StringBuffer();
     var moodSaved = false;
 
@@ -126,6 +142,18 @@ class ChatNotifier extends _$ChatNotifier {
       scheduledEvent: createdEvent != null ? eventMap : null,
     );
     state = finalMessages;
+
+    // ── Quota tracking ────────────────────────────────────────────────────────
+    try {
+      final repo = ref.read(quotaRepositoryProvider);
+      if (isGrace) {
+        await repo.incrementGrace();
+      } else {
+        await repo.incrementMessage();
+      }
+    } catch (_) {
+      // Non-critical: quota write failure (e.g. no auth) does not block chat.
+    }
   }
 
   Future<Event?> _persistEvent(Map<String, dynamic> eventMap) async {

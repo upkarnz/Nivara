@@ -8,12 +8,12 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('aiModelNotifierProvider defaults to claude', () async {
+  test('aiModelNotifierProvider defaults to gemini_flash', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
 
     final value = await container.read(aiModelNotifierProvider.future);
-    expect(value, 'claude');
+    expect(value, 'gemini_flash');
   });
 
   test('setModel persists to SharedPreferences', () async {
