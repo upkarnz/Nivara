@@ -81,6 +81,7 @@ Immutable value object holding all limits for a tier. Static factory `TierConfig
 - `historyDays` (int — `null` = unlimited)
 - `musicEnabled` (bool)
 - `wakeWordLimit` (int — `null` = unlimited)
+- `wakeWordLimitIsMonthly` (bool — `true` = resets each month; `false` = lifetime total; Free uses `false` with limit 5, Pro uses `true` with limit 30)
 - `elevenLabsEnabled` (bool)
 - `modelOverrideAllowed` (bool)
 - `availableModels` (List<String>)
@@ -169,9 +170,8 @@ final tierConfigProvider = Provider<TierConfig>((ref) {
 ```
 1. Read quotaProvider state
 2. If exhausted → show PaywallSheet, return early
-3. If inGrace → increment graceUsed, show QuotaBanner, proceed
-4. If ok → proceed normally
-5. On successful AI response → increment messagesUsed
+3. If inGrace → show QuotaBanner, proceed; on successful AI response → increment graceUsed only
+4. If ok → proceed normally; on successful AI response → increment messagesUsed only
 ```
 
 Grace messages show a persistent amber banner in `ChatPage` until user upgrades or the period resets.
@@ -245,9 +245,10 @@ Features gated by `tierConfigProvider` throughout the app:
 
 Gating points:
 - `MusicPage` / `MiniPlayerWidget` → check `tierConfig.musicEnabled`, show upgrade prompt if false
-- `VoiceNotifier._onWakeWordDetected()` → check `wakeWordLimit`, track activations in Firestore
+- `VoiceNotifier._onWakeWordDetected()` → check `wakeWordLimit` + `wakeWordLimitIsMonthly`, track activations in `WakeWordQuotaRepository`
 - `VoiceSettingsPage` ElevenLabs section → locked with upgrade prompt if `!elevenLabsEnabled`
 - `ModelSelectorWidget` → model rows locked per `availableModels`
+- `ChatHistoryRepository` → query filtered by `periodStart` for Free tier: only return messages within past 7 days; unlimited for Pro/Premium (`historyDays == null`)
 
 ---
 
