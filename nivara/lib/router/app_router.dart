@@ -10,9 +10,11 @@ import '../features/planner/presentation/pages/calendar_consent_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
 import '../features/planner/data/google_calendar_repository.dart';
 import '../features/mood/presentation/pages/mood_board_page.dart';
+import '../features/music/presentation/pages/music_page.dart';
 import '../features/profile/presentation/pages/assistant_setup_page.dart';
 import '../features/profile/presentation/pages/profile_setup_page.dart';
 import '../voice/voice_settings_page.dart';
+import '../shared/widgets/app_shell.dart';
 
 part 'app_router.g.dart';
 
@@ -49,30 +51,13 @@ GoRouter appRouter(AppRouterRef ref) {
         builder: (context, state) => const AssistantSetupPage(),
       ),
       GoRoute(
-        path: '/chat',
-        builder: (context, state) => const ChatPage(),
-      ),
-      GoRoute(
         path: '/settings/voice',
         builder: (context, state) => const VoiceSettingsPage(),
       ),
       GoRoute(
-        path: '/planner',
-        builder: (context, state) => const PlannerPage(),
-      ),
-      GoRoute(
-        path: '/memory',
-        builder: (context, state) => const MemoryPage(),
-      ),
-      GoRoute(
-        path: '/mood',
-        builder: (context, state) => const MoodBoardPage(),
-      ),
-      GoRoute(
         path: '/planner/calendar-consent',
         builder: (context, state) {
-          final gcalRepo =
-              ref.read(googleCalendarRepositoryProvider);
+          final gcalRepo = ref.read(googleCalendarRepositoryProvider);
           return CalendarConsentPage(
             onAllow: () async {
               await gcalRepo.requestAccess();
@@ -84,6 +69,31 @@ GoRouter appRouter(AppRouterRef ref) {
             },
           );
         },
+      ),
+      ShellRoute(
+        builder: (context, state, child) => AppShell(child: child),
+        routes: [
+          GoRoute(
+            path: '/chat',
+            builder: (context, state) => const ChatPage(),
+          ),
+          GoRoute(
+            path: '/music',
+            builder: (context, state) => const MusicPage(),
+          ),
+          GoRoute(
+            path: '/planner',
+            builder: (context, state) => const PlannerPage(),
+          ),
+          GoRoute(
+            path: '/memory',
+            builder: (context, state) => const MemoryPage(),
+          ),
+          GoRoute(
+            path: '/mood',
+            builder: (context, state) => const MoodBoardPage(),
+          ),
+        ],
       ),
     ],
   );
