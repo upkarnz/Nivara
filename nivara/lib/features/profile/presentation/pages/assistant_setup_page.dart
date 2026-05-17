@@ -18,6 +18,28 @@ class _AssistantSetupPageState extends ConsumerState<AssistantSetupPage> {
   String _voice = 'neutral';
   String _style = 'friendly';
   bool _saving = false;
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _preloadVoice());
+  }
+
+  /// Pre-populate voice from the user's profile preference set in ProfileSetupPage.
+  Future<void> _preloadVoice() async {
+    if (_loaded) return;
+    final user = ref.read(authStateProvider).valueOrNull;
+    if (user == null) return;
+    final profile =
+        await ref.read(profileRepositoryProvider).getProfile(user.uid);
+    if (mounted && profile != null && profile.voicePreference.isNotEmpty) {
+      setState(() {
+        _voice = profile.voicePreference;
+        _loaded = true;
+      });
+    }
+  }
 
   Future<void> _save() async {
     final assistantName = _nameCtrl.text.trim();

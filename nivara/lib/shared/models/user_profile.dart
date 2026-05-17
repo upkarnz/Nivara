@@ -7,6 +7,7 @@ class UserProfile {
     required this.language,
     required this.timezone,
     required this.photoUrl,
+    this.voicePreference = 'neutral',
   });
 
   final String name;
@@ -16,6 +17,8 @@ class UserProfile {
   final String language;
   final String timezone;
   final String photoUrl;
+  /// Preferred assistant voice: 'male', 'female', or 'neutral'.
+  final String voicePreference;
 
   factory UserProfile.empty() => const UserProfile(
         name: '',
@@ -25,6 +28,7 @@ class UserProfile {
         language: 'en',
         timezone: 'UTC',
         photoUrl: '',
+        voicePreference: 'neutral',
       );
 
   factory UserProfile.fromMap(Map<String, dynamic> map) => UserProfile(
@@ -35,6 +39,7 @@ class UserProfile {
         language: map['language'] as String? ?? 'en',
         timezone: map['timezone'] as String? ?? 'UTC',
         photoUrl: map['photoUrl'] as String? ?? '',
+        voicePreference: map['voicePreference'] as String? ?? 'neutral',
       );
 
   Map<String, dynamic> toMap() => {
@@ -45,6 +50,7 @@ class UserProfile {
         'language': language,
         'timezone': timezone,
         'photoUrl': photoUrl,
+        'voicePreference': voicePreference,
         'updatedAt': DateTime.now().toIso8601String(),
       };
 
@@ -56,6 +62,7 @@ class UserProfile {
     String? language,
     String? timezone,
     String? photoUrl,
+    String? voicePreference,
   }) =>
       UserProfile(
         name: name ?? this.name,
@@ -65,6 +72,7 @@ class UserProfile {
         language: language ?? this.language,
         timezone: timezone ?? this.timezone,
         photoUrl: photoUrl ?? this.photoUrl,
+        voicePreference: voicePreference ?? this.voicePreference,
       );
 }
 

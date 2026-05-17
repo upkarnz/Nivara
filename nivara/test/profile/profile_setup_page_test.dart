@@ -15,7 +15,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(child: MaterialApp.router(routerConfig: router)),
     );
-    expect(find.text('Your Name'), findsOneWidget);
-    expect(find.text('Language'), findsOneWidget);
+    expect(find.text('Your Name *'), findsOneWidget);
+    expect(find.text('Preferred Language'), findsOneWidget);
+    // Voice preference section
+    expect(find.text('Assistant Voice'), findsOneWidget);
+    expect(find.text('Female'), findsOneWidget);
+    expect(find.text('Neutral'), findsOneWidget);
+    expect(find.text('Male'), findsOneWidget);
   });
 }
