@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,10 +8,16 @@ import '../../auth/presentation/providers/auth_provider.dart';
 
 part 'hermes_client.g.dart';
 
-const _defaultBaseUrl = String.fromEnvironment(
-  'HERMES_BASE_URL',
-  defaultValue: 'https://your-app.railway.app',
-);
+/// Production URL injected at build time via --dart-define=HERMES_BASE_URL=...
+/// Falls back to localhost:8000 in debug builds so the simulator works out of
+/// the box without any extra flags.
+const _dartDefineUrl = String.fromEnvironment('HERMES_BASE_URL');
+
+String get _defaultBaseUrl {
+  if (_dartDefineUrl.isNotEmpty) return _dartDefineUrl;
+  if (kDebugMode) return 'http://localhost:8000';
+  return 'https://your-app.railway.app'; // replace before going live
+}
 
 sealed class ChatChunk {
   const ChatChunk();

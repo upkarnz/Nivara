@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Nivara connects to the local AI backend server during development.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http._tcp</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -45,9 +51,37 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1086216659352-7e0k3s0ur0ptt8s6mnp8p8rhtu8s2m3v</string>
+			</array>
+		</dict>
+	</array>
+	<key>GIDClientID</key>
+	<string>1086216659352-7e0k3s0ur0ptt8s6mnp8p8rhtu8s2m3v.apps.googleusercontent.com</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Nivara needs microphone access to hear your voice and respond to the wake word.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Nivara uses speech recognition to convert your voice to text.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>
