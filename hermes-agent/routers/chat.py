@@ -24,8 +24,24 @@ _BACKGROUND_TASKS: set = set()
 MEMORY_INJECT_HEADER = "\n\n## What you know about the user\nUse this naturally in conversation, don't announce it:\n"
 
 
+_SCHEDULE_INSTRUCTIONS = """
+
+## Scheduling events
+When the user asks to schedule, book, create, or add an event, meeting, appointment, or reminder, confirm briefly and append a JSON block at the very end of your response in this exact format (no extra keys):
+
+```json
+{"schedule_event": {"title": "Event title", "start": "YYYY-MM-DDTHH:MM:SS", "end": "YYYY-MM-DDTHH:MM:SS"}}
+```
+
+Rules:
+- Use ISO 8601 local time (no timezone suffix).
+- If no end time is given, default to 1 hour after start.
+- If the user gives a date without a year, use the current year.
+- Only emit this block when actually creating an event — not for general date questions."""
+
+
 def _build_system_prompt(assistant_name: str, memories: list) -> str:
-    base = f"You are {assistant_name}, a helpful personal AI assistant."
+    base = f"You are {assistant_name}, a helpful personal AI assistant." + _SCHEDULE_INSTRUCTIONS
     if not memories:
         return base
     facts = "\n".join(f"- {m.content}" for m in memories)

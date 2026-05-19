@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class Role(str, Enum):
     user = "user"
     assistant = "assistant"
+    system = "system"
 
 
 class ChatMessage(BaseModel):
