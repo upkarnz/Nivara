@@ -9,7 +9,7 @@ from models.message import ChatMessage
 logger = logging.getLogger(__name__)
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = os.environ.get("GROQ_MODEL", "llama3-8b-8192")
+MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 
 async def stream_groq_response(
