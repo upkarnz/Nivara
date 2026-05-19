@@ -22,9 +22,14 @@ const _kRevenueCatApiKeyAndroid = String.fromEnvironment(
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // Already initialized (e.g. iOS plugin auto-configures from plist)
+    if (Firebase.apps.isEmpty) rethrow;
+  }
 
   // Initialise RevenueCat before runApp so subscription state is available
   // immediately when the widget tree builds.
