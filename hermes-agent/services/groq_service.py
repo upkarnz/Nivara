@@ -1,6 +1,7 @@
 import logging
 import os
 from collections.abc import AsyncGenerator
+from datetime import datetime
 
 import httpx
 
@@ -21,8 +22,10 @@ async def stream_groq_response(
     if not api_key:
         raise RuntimeError("GROQ_API_KEY environment variable is not set")
 
+    today = datetime.now()
     system_prompt = (
         f"You are {assistant_name}, a warm and caring AI companion.\n\n"
+        f"Today is {today.strftime('%A, %B %-d, %Y')}.\n\n"
         "## Scheduling events\n"
         "When the user asks to schedule, book, create, or add an event, meeting, "
         "appointment, or reminder, confirm briefly and append a JSON block at the "
