@@ -98,6 +98,7 @@ async def stream_chat(
                 logger.debug("Mood event skipped: %s", e)
             except Exception as e:
                 logger.debug("Mood event skipped: %s", e)
+            yield "data: [DONE]\n\n"
         finally:
             if not mood_task.done():
                 mood_task.cancel()

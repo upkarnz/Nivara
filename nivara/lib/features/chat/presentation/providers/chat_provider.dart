@@ -17,10 +17,11 @@ import '../../../subscription/presentation/providers/subscription_providers.dart
 import '../../data/hermes_client.dart';
 import '../../domain/event_parser.dart';
 import '../../domain/message.dart';
+import '../../../planner/presentation/providers/planner_provider.dart';
 
 part 'chat_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ChatNotifier extends _$ChatNotifier {
   @override
   List<ChatMessage> build() => [];
@@ -93,45 +94,90 @@ class ChatNotifier extends _$ChatNotifier {
 
     final config = await ref.read(assistantConfigProvider.future);
     final assistantName = config?.name ?? 'Rocky';
+    // ignore: avoid_print
+    print('[CHAT] assistantName=$assistantName');
 
     final client = ref.read(hermesClientProvider);
     final aiModel = await ref
         .read(aiModelNotifierProvider.future)
         .catchError((_) => 'gemini_flash');
+    // ignore: avoid_print
+    print('[CHAT] aiModel=$aiModel baseUrl=${client.baseUrl}');
+
     final buffer = StringBuffer();
     var moodSaved = false;
 
-    await for (final chunk in client.chatStream(
-      messages: hermesMessages,
-      assistantName: assistantName,
-      aiModel: aiModel,
-    )) {
-      switch (chunk) {
-        case TextChunk(:final text):
-          buffer.write(text);
-          final updated = List<ChatMessage>.from(state);
-          updated[assistantIndex] = ChatMessage(
-            role: MessageRole.assistant,
-            content: buffer.toString(),
-            isStreaming: true,
-          );
-          state = updated;
-        case MoodChunk(:final score, :final label):
-          if (!moodSaved) {
-            moodSaved = true;
-            unawaited(_saveMoodPassive(score, label));
-          }
-        case DoneChunk():
-          break;
+    try {
+      // ignore: avoid_print
+      print('[CHAT] starting chatStream');
+      await for (final chunk in client.chatStream(
+        messages: hermesMessages,
+        assistantName: assistantName,
+        aiModel: aiModel,
+      )) {
+        switch (chunk) {
+          case TextChunk(:final text):
+            buffer.write(text);
+            final updated = List<ChatMessage>.from(state);
+            updated[assistantIndex] = ChatMessage(
+              role: MessageRole.assistant,
+              content: buffer.toString(),
+              isStreaming: true,
+            );
+            state = updated;
+          case MoodChunk(:final score, :final label):
+            if (!moodSaved) {
+              moodSaved = true;
+              unawaited(_saveMoodPassive(score, label));
+            }
+          case DoneChunk():
+            break;
+          case ErrorChunk(:final message):
+            final errMessages = List<ChatMessage>.from(state);
+            errMessages[assistantIndex] = ChatMessage(
+              role: MessageRole.assistant,
+              content: message,
+              isStreaming: false,
+            );
+            state = errMessages;
+            return;
+        }
       }
+    } catch (e) {
+      // ignore: avoid_print
+      print('[CHAT] stream error: $e');
+      final errMessages = List<ChatMessage>.from(state);
+      errMessages[assistantIndex] = ChatMessage(
+        role: MessageRole.assistant,
+        content: "Sorry, I couldn't reach the server. Please try again.",
+        isStreaming: false,
+      );
+      state = errMessages;
+      return;
     }
 
     final finalContent = buffer.toString();
+
+    // Guard: empty response means the AI provider failed silently on the backend.
+    if (finalContent.isEmpty) {
+      final errMessages = List<ChatMessage>.from(state);
+      errMessages[assistantIndex] = ChatMessage(
+        role: MessageRole.assistant,
+        content: "Sorry, I couldn't get a response. Please try again.",
+        isStreaming: false,
+      );
+      state = errMessages;
+      return;
+    }
+
     final eventMap = parseScheduledEvent(finalContent);
 
     Event? createdEvent;
     if (eventMap != null) {
       createdEvent = await _persistEvent(eventMap);
+      if (createdEvent != null) {
+        ref.invalidate(plannerNotifierProvider);
+      }
     }
 
     final finalMessages = List<ChatMessage>.from(state);
