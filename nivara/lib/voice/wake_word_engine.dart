@@ -5,4 +5,7 @@ enum WakeWordEngine {
 
   /// Porcupine on-device wake word (requires a free Picovoice AccessKey).
   porcupine,
+
+  /// Google Cloud Speech-to-Text for wake word detection (requires a Google Cloud API key).
+  googleCloud,
 }

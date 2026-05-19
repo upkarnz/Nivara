@@ -14,6 +14,7 @@ import 'wake_word_engine.dart';
 import 'wake_word_service.dart';
 import 'stt_wake_word_service.dart';
 import 'porcupine_wake_word_service.dart';
+import 'google_cloud_wake_word_service.dart';
 import '../features/music/domain/mood_category.dart';
 import '../features/music/presentation/providers/mood_playlist_provider.dart';
 import '../features/music/presentation/providers/music_player_notifier.dart';
@@ -85,6 +86,10 @@ class VoiceNotifier extends Notifier<VoiceState> {
         settings.porcupineAccessKey.isNotEmpty) {
       return PorcupineWakeWordService(
           accessKey: settings.porcupineAccessKey);
+    }
+    if (settings.engine == WakeWordEngine.googleCloud &&
+        settings.googleCloudApiKey.isNotEmpty) {
+      return GoogleCloudWakeWordService(apiKey: settings.googleCloudApiKey);
     }
     return SttWakeWordService();
   }
@@ -189,8 +194,14 @@ class VoiceNotifier extends Notifier<VoiceState> {
   // Public API for manual trigger (e.g. VoiceFab tap)
   // ---------------------------------------------------------------------------
 
+  /// Whether the speech-to-text engine initialised successfully.
+  bool get isSttReady => _sttReady;
+
   /// Manually triggers a listening session (mirrors wake-word detection).
   void startListening() => unawaited(_onWakeWordDetected());
+
+  /// Submits [text] directly, bypassing speech recognition.
+  void sendTextMessage(String text) => unawaited(_handleTranscript(text));
 
   /// Stops everything and returns to idle.
   Future<void> stopAll() async {

@@ -26,20 +26,24 @@ class VoiceSettingsPage extends ConsumerStatefulWidget {
 
 class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
   late final TextEditingController _porcupineCtrl;
+  late final TextEditingController _googleCloudCtrl;
   late final TextEditingController _elevenLabsCtrl;
   bool _obscurePorcupine = true;
+  bool _obscureGoogleCloud = true;
   bool _obscureElevenLabs = true;
 
   @override
   void initState() {
     super.initState();
     _porcupineCtrl = TextEditingController();
+    _googleCloudCtrl = TextEditingController();
     _elevenLabsCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
     _porcupineCtrl.dispose();
+    _googleCloudCtrl.dispose();
     _elevenLabsCtrl.dispose();
     super.dispose();
   }
@@ -63,6 +67,10 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
           if (_porcupineCtrl.text.isEmpty &&
               settings.porcupineAccessKey.isNotEmpty) {
             _porcupineCtrl.text = settings.porcupineAccessKey;
+          }
+          if (_googleCloudCtrl.text.isEmpty &&
+              settings.googleCloudApiKey.isNotEmpty) {
+            _googleCloudCtrl.text = settings.googleCloudApiKey;
           }
           if (_elevenLabsCtrl.text.isEmpty &&
               settings.elevenLabsApiKey.isNotEmpty) {
@@ -162,6 +170,66 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                         .read(voiceSettingsProvider.notifier)
                         .setPorcupineAccessKey(_porcupineCtrl.text.trim()),
                     child: const Text('Save AccessKey'),
+                  ),
+                ),
+
+              // ── Google Cloud STT option ──────────────────────────────────
+              RadioListTile<WakeWordEngine>(
+                value: WakeWordEngine.googleCloud,
+                groupValue: settings.engine,
+                title: const Text('Google Cloud Speech-to-Text'),
+                subtitle: const Text(
+                  'High-accuracy cloud STT for wake word detection. '
+                  'Requires a Google Cloud API key with Speech-to-Text enabled.',
+                  style: TextStyle(fontSize: 12, color: Colors.white54),
+                ),
+                onChanged: (v) {
+                  if (v != null) {
+                    ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setEngine(v);
+                  }
+                },
+              ),
+
+              // ── Google Cloud API key field (conditional) ─────────────────
+              if (settings.engine == WakeWordEngine.googleCloud)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    key: const Key('google_cloud_key_field'),
+                    controller: _googleCloudCtrl,
+                    obscureText: _obscureGoogleCloud,
+                    decoration: InputDecoration(
+                      labelText: 'Google Cloud API Key',
+                      hintText: 'Paste your API key here',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureGoogleCloud
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () => setState(
+                            () => _obscureGoogleCloud = !_obscureGoogleCloud),
+                      ),
+                    ),
+                    onSubmitted: (key) => ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setGoogleCloudApiKey(key.trim()),
+                    onEditingComplete: () {},
+                  ),
+                ),
+
+              if (settings.engine == WakeWordEngine.googleCloud)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: ElevatedButton(
+                    onPressed: () => ref
+                        .read(voiceSettingsProvider.notifier)
+                        .setGoogleCloudApiKey(_googleCloudCtrl.text.trim()),
+                    child: const Text('Save API Key'),
                   ),
                 ),
 

@@ -58,4 +58,19 @@ class PlannerNotifier extends _$PlannerNotifier {
     state = const AsyncLoading();
     state = await AsyncValue.guard(_load);
   }
+
+  Future<void> addEvent(Event event) async {
+    final repo = ref.read(firestoreCalendarRepositoryProvider);
+    await repo.createEvent(event);
+    state = await AsyncValue.guard(_load);
+  }
+
+  Future<void> deleteEvent(String eventId) async {
+    final repo = ref.read(firestoreCalendarRepositoryProvider);
+    await repo.deleteEvent(eventId);
+    // Optimistically remove from current list, then reload.
+    final current = state.valueOrNull ?? [];
+    state = AsyncData(current.where((e) => e.id != eventId).toList());
+    state = await AsyncValue.guard(_load);
+  }
 }

@@ -9,6 +9,7 @@ import 'wake_word_engine.dart';
 
 const _kEngine = 'voice_settings_engine';
 const _kPorcupineKey = 'voice_settings_porcupine_access_key';
+const _kGoogleCloudApiKey = 'voice_settings_google_cloud_api_key';
 const _kTtsProvider = 'voice_settings_tts_provider';
 const _kElevenLabsApiKey = 'voice_settings_elevenlabs_api_key';
 
@@ -21,24 +22,28 @@ class VoiceSettings {
   const VoiceSettings({
     this.engine = WakeWordEngine.stt,
     this.porcupineAccessKey = '',
+    this.googleCloudApiKey = '',
     this.ttsProvider = TtsProvider.flutterTts,
     this.elevenLabsApiKey = '',
   });
 
   final WakeWordEngine engine;
   final String porcupineAccessKey;
+  final String googleCloudApiKey;
   final TtsProvider ttsProvider;
   final String elevenLabsApiKey;
 
   VoiceSettings copyWith({
     WakeWordEngine? engine,
     String? porcupineAccessKey,
+    String? googleCloudApiKey,
     TtsProvider? ttsProvider,
     String? elevenLabsApiKey,
   }) =>
       VoiceSettings(
         engine: engine ?? this.engine,
         porcupineAccessKey: porcupineAccessKey ?? this.porcupineAccessKey,
+        googleCloudApiKey: googleCloudApiKey ?? this.googleCloudApiKey,
         ttsProvider: ttsProvider ?? this.ttsProvider,
         elevenLabsApiKey: elevenLabsApiKey ?? this.elevenLabsApiKey,
       );
@@ -55,11 +60,13 @@ class VoiceSettingsNotifier extends AsyncNotifier<VoiceSettings> {
     final prefs = await SharedPreferences.getInstance();
     final engineIndex = prefs.getInt(_kEngine) ?? 0;
     final porcKey = prefs.getString(_kPorcupineKey) ?? '';
+    final gcpKey = prefs.getString(_kGoogleCloudApiKey) ?? '';
     final ttsIndex = prefs.getInt(_kTtsProvider) ?? 0;
     final elevenKey = prefs.getString(_kElevenLabsApiKey) ?? '';
     return VoiceSettings(
       engine: WakeWordEngine.values[engineIndex],
       porcupineAccessKey: porcKey,
+      googleCloudApiKey: gcpKey,
       ttsProvider: TtsProvider.values[ttsIndex],
       elevenLabsApiKey: elevenKey,
     );
@@ -75,6 +82,12 @@ class VoiceSettingsNotifier extends AsyncNotifier<VoiceSettings> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kPorcupineKey, key);
     state = AsyncData(state.value!.copyWith(porcupineAccessKey: key));
+  }
+
+  Future<void> setGoogleCloudApiKey(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kGoogleCloudApiKey, key);
+    state = AsyncData(state.value!.copyWith(googleCloudApiKey: key));
   }
 
   Future<void> setTtsProvider(TtsProvider provider) async {

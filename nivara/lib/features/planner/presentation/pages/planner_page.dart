@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/event.dart';
@@ -32,6 +33,11 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddEventSheet(context),
+        backgroundColor: const Color(0xFF7C6EF7),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       body: eventsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => const Center(
@@ -46,7 +52,248 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
       ),
     );
   }
+
+  Future<void> _showAddEventSheet(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E1E2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => _AddEventSheet(
+        onSave: (event) =>
+            ref.read(plannerNotifierProvider.notifier).addEvent(event),
+      ),
+    );
+  }
 }
+
+// ---------------------------------------------------------------------------
+// Add Event Sheet
+// ---------------------------------------------------------------------------
+
+class _AddEventSheet extends StatefulWidget {
+  const _AddEventSheet({required this.onSave});
+
+  final Future<void> Function(Event event) onSave;
+
+  @override
+  State<_AddEventSheet> createState() => _AddEventSheetState();
+}
+
+class _AddEventSheetState extends State<_AddEventSheet> {
+  final _titleCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  DateTime _startTime = DateTime.now().add(const Duration(hours: 1));
+  DateTime _endTime =
+      DateTime.now().add(const Duration(hours: 2));
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    super.dispose();
+  }
+
+  String _fmtDateTime(DateTime dt) {
+    final date =
+        '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+    final h = dt.hour;
+    final m = dt.minute.toString().padLeft(2, '0');
+    final period = h >= 12 ? 'PM' : 'AM';
+    final hour = h > 12 ? h - 12 : (h == 0 ? 12 : h);
+    return '$date $hour:$m $period';
+  }
+
+  Future<void> _pickStart() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _startTime,
+      firstDate: DateTime.now().subtract(const Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_startTime),
+    );
+    if (time == null || !mounted) return;
+    setState(() {
+      _startTime =
+          DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      if (_endTime.isBefore(_startTime)) {
+        _endTime = _startTime.add(const Duration(hours: 1));
+      }
+    });
+  }
+
+  Future<void> _pickEnd() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _endTime,
+      firstDate: _startTime,
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_endTime),
+    );
+    if (time == null || !mounted) return;
+    setState(() {
+      _endTime =
+          DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    });
+  }
+
+  Future<void> _save() async {
+    final title = _titleCtrl.text.trim();
+    if (title.isEmpty) return;
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final now = DateTime.now();
+    final event = Event(
+      id: '',
+      userId: uid,
+      title: title,
+      startTime: _startTime,
+      endTime: _endTime,
+      description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+      source: EventSource.local,
+      createdAt: now,
+      updatedAt: now,
+    );
+    setState(() => _saving = true);
+    try {
+      await widget.onSave(event);
+      if (mounted) Navigator.of(context).pop();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + padding),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Add Event',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _titleCtrl,
+            autofocus: true,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              labelText: 'Title',
+              labelStyle: TextStyle(color: Colors.white54),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white24),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _descCtrl,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              labelText: 'Description (optional)',
+              labelStyle: TextStyle(color: Colors.white54),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white24),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _DateTimeRow(
+            label: 'Start',
+            value: _fmtDateTime(_startTime),
+            onTap: _pickStart,
+          ),
+          const SizedBox(height: 8),
+          _DateTimeRow(
+            label: 'End',
+            value: _fmtDateTime(_endTime),
+            onTap: _pickEnd,
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _saving ? null : _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF7C6EF7),
+                foregroundColor: Colors.white,
+              ),
+              child: _saving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Save Event'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DateTimeRow extends StatelessWidget {
+  const _DateTimeRow({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Text(
+              '$label:  ',
+              style:
+                  const TextStyle(color: Colors.white54, fontSize: 13),
+            ),
+            Text(
+              value,
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+            ),
+            const Spacer(),
+            const Icon(Icons.edit_outlined,
+                size: 16, color: Colors.white38),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Empty state
+// ---------------------------------------------------------------------------
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
@@ -63,19 +310,28 @@ class _EmptyState extends StatelessWidget {
             'No events in the next 30 days',
             style: TextStyle(color: Colors.white38),
           ),
+          SizedBox(height: 8),
+          Text(
+            'Tap + to add an event',
+            style: TextStyle(color: Colors.white24, fontSize: 12),
+          ),
         ],
       ),
     );
   }
 }
 
-class _EventList extends StatelessWidget {
+// ---------------------------------------------------------------------------
+// Event list
+// ---------------------------------------------------------------------------
+
+class _EventList extends ConsumerWidget {
   const _EventList({required this.events});
 
   final List<Event> events;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final grouped = _groupByDay(events);
     final days = grouped.keys.toList()..sort();
 
@@ -100,7 +356,14 @@ class _EventList extends StatelessWidget {
                 ),
               ),
             ),
-            ...dayEvents.map((e) => EventTile(event: e)),
+            ...dayEvents.map((e) => EventTile(
+                  event: e,
+                  onDelete: e.source == EventSource.local
+                      ? () => ref
+                          .read(plannerNotifierProvider.notifier)
+                          .deleteEvent(e.id)
+                      : null,
+                )),
           ],
         );
       },

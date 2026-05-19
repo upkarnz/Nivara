@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../../domain/event.dart';
 
 class EventTile extends StatelessWidget {
-  const EventTile({super.key, required this.event});
+  const EventTile({super.key, required this.event, this.onDelete});
 
   final Event event;
+  final VoidCallback? onDelete;
 
   Color get _borderColor => switch (event.source) {
         EventSource.googleCalendar => const Color(0xFF4285F4),
@@ -31,7 +32,7 @@ class EventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final tile = Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E2E),
@@ -76,9 +77,63 @@ class EventTile extends StatelessWidget {
                 ),
               ),
             ),
+            if (onDelete != null)
+              IconButton(
+                icon: const Icon(Icons.delete_outline,
+                    color: Colors.white38, size: 20),
+                onPressed: () => _confirmDelete(context),
+                tooltip: 'Delete event',
+              ),
           ],
         ),
       ),
     );
+
+    if (onDelete == null) return tile;
+
+    return Dismissible(
+      key: Key('event_${event.id}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.red.shade800,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete_outline, color: Colors.white),
+      ),
+      confirmDismiss: (_) => _showDeleteDialog(context),
+      onDismissed: (_) => onDelete!(),
+      child: tile,
+    );
+  }
+
+  Future<bool?> _showDeleteDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete event?'),
+        content: Text('Remove "${event.title}" from your planner?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    _showDeleteDialog(context).then((confirmed) {
+      if (confirmed == true) onDelete!();
+    });
   }
 }

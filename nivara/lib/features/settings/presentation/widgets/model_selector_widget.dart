@@ -21,6 +21,11 @@ class _ModelRow {
 
 const _allModels = [
   _ModelRow(
+    id: kModelGroq,
+    label: 'Groq (Llama 3.3 70B)',
+    subtitle: 'Free · Fastest responses',
+  ),
+  _ModelRow(
     id: kModelGeminiFlash,
     label: 'Gemini 2.0 Flash',
     subtitle: 'Default — gives you the most messages',
@@ -75,9 +80,9 @@ class ModelSelectorWidget extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Text(
-              'Gemini Flash gives you the most messages. '
-              'Switch to another model when you need deeper research '
-              'or higher quality responses.',
+              'Groq is free and the fastest. Gemini Flash gives you the most '
+              'messages. Switch to other models for deeper research or '
+              'higher quality responses.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color:
                         Theme.of(context).colorScheme.onSurfaceVariant,

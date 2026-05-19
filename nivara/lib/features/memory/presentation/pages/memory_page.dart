@@ -13,13 +13,21 @@ class MemoryPage extends ConsumerStatefulWidget {
   ConsumerState<MemoryPage> createState() => _MemoryPageState();
 }
 
-class _MemoryPageState extends ConsumerState<MemoryPage> {
-  bool _showGraph = false;
+class _MemoryPageState extends ConsumerState<MemoryPage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<String?> _getToken() async {
@@ -41,20 +49,13 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Memories'),
-        actions: [
-          memoriesAsync.maybeWhen(
-            data: (memories) => memories.isNotEmpty
-                ? IconButton(
-                    icon: Icon(
-                      _showGraph ? Icons.list_outlined : Icons.hub_outlined,
-                    ),
-                    tooltip: _showGraph ? 'List view' : 'Graph view',
-                    onPressed: () => setState(() => _showGraph = !_showGraph),
-                  )
-                : const SizedBox.shrink(),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(icon: Icon(Icons.list_outlined), text: 'List'),
+            Tab(icon: Icon(Icons.hub_outlined), text: 'Graph'),
+          ],
+        ),
       ),
       body: memoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -65,33 +66,39 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               child: Text('No memories yet. Keep chatting!'),
             );
           }
-          if (_showGraph) {
-            return MemoryGraphView(
-              memories: memories,
-              onDelete: (memory) async {
-                final token = await _getToken();
-                if (token == null) return;
-                ref
-                    .read(memoryNotifierProvider.notifier)
-                    .deleteMemory(token, memory.id);
-              },
-            );
-          }
-          return ListView.builder(
-            itemCount: memories.length,
-            itemBuilder: (context, index) {
-              final memory = memories[index];
-              return MemoryTile(
-                memory: memory,
-                onDelete: () async {
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              // ── List tab ─────────────────────────────────────────────────
+              ListView.builder(
+                itemCount: memories.length,
+                itemBuilder: (context, index) {
+                  final memory = memories[index];
+                  return MemoryTile(
+                    memory: memory,
+                    onDelete: () async {
+                      final token = await _getToken();
+                      if (token == null) return;
+                      ref
+                          .read(memoryNotifierProvider.notifier)
+                          .deleteMemory(token, memory.id);
+                    },
+                  );
+                },
+              ),
+
+              // ── Graph tab ─────────────────────────────────────────────────
+              MemoryGraphView(
+                memories: memories,
+                onDelete: (memory) async {
                   final token = await _getToken();
                   if (token == null) return;
                   ref
                       .read(memoryNotifierProvider.notifier)
                       .deleteMemory(token, memory.id);
                 },
-              );
-            },
+              ),
+            ],
           );
         },
       ),
