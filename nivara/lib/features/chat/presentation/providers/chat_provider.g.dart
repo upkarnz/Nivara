@@ -6,12 +6,12 @@ part of 'chat_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatNotifierHash() => r'bde7c28305fe6c90183e8e69015b16ae0e7e5df3';
+String _$chatNotifierHash() => r'784468011855d733957576249b19855a67115171';
 
 /// See also [ChatNotifier].
 @ProviderFor(ChatNotifier)
 final chatNotifierProvider =
-    AutoDisposeNotifierProvider<ChatNotifier, List<ChatMessage>>.internal(
+    NotifierProvider<ChatNotifier, List<ChatMessage>>.internal(
   ChatNotifier.new,
   name: r'chatNotifierProvider',
   debugGetCreateSourceHash:
@@ -20,6 +20,6 @@ final chatNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$ChatNotifier = AutoDisposeNotifier<List<ChatMessage>>;
+typedef _$ChatNotifier = Notifier<List<ChatMessage>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

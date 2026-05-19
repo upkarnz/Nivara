@@ -9,14 +9,12 @@ import '../../auth/presentation/providers/auth_provider.dart';
 part 'hermes_client.g.dart';
 
 /// Production URL injected at build time via --dart-define=HERMES_BASE_URL=...
-/// Falls back to localhost:8000 in debug builds so the simulator works out of
-/// the box without any extra flags.
+/// Falls back to the Railway production URL in debug builds when no define is set.
 const _dartDefineUrl = String.fromEnvironment('HERMES_BASE_URL');
 
 String get _defaultBaseUrl {
   if (_dartDefineUrl.isNotEmpty) return _dartDefineUrl;
-  if (kDebugMode) return 'http://localhost:8000';
-  return 'https://your-app.railway.app'; // replace before going live
+  return 'https://nivara-production.up.railway.app';
 }
 
 sealed class ChatChunk {
@@ -38,8 +36,14 @@ class DoneChunk extends ChatChunk {
   const DoneChunk();
 }
 
+class ErrorChunk extends ChatChunk {
+  const ErrorChunk(this.message);
+  final String message;
+}
+
 ChatChunk parseSseData(String data) {
   if (data == '[DONE]') return const DoneChunk();
+  if (data == '[ERROR]') return const ErrorChunk('The AI service is unavailable. Please try again later.');
   if (data.startsWith('__MOOD__')) {
     final raw = data.substring('__MOOD__'.length);
     try {
@@ -70,10 +74,12 @@ class HermesClient {
   final String _baseUrl;
   final Future<String> Function()? _tokenProvider;
 
+  String get baseUrl => _baseUrl;
+
   Stream<ChatChunk> chatStream({
     required List<Map<String, String>> messages,
     required String assistantName,
-    String aiModel = 'claude',
+    String aiModel = 'groq',
   }) async* {
     final token = _tokenProvider != null ? await _tokenProvider() : '';
 
@@ -93,6 +99,12 @@ class HermesClient {
     final client = http.Client();
     try {
       final response = await client.send(request);
+
+      if (response.statusCode != 200) {
+        final body = await response.stream.bytesToString();
+        throw Exception('Chat error ${response.statusCode}: $body');
+      }
+
       final stream = response.stream.transform(utf8.decoder);
       final buffer = StringBuffer();
 
@@ -108,7 +120,7 @@ class HermesClient {
             final data = trimmed.substring(6);
             final parsed = parseSseData(data);
             yield parsed;
-            if (parsed is DoneChunk) return;
+            if (parsed is DoneChunk || parsed is ErrorChunk) return;
           }
         }
         buffer.write(lines.last);

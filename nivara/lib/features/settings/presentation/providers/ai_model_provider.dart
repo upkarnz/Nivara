@@ -11,8 +11,8 @@ const kModelClaudeHaiku = 'claude_haiku';
 const kModelClaudeSonnet = 'claude_sonnet';
 const kModelGpt4o = 'gpt4o';
 
-/// The default model ID — Claude Haiku is the reliable default.
-const kDefaultModel = kModelClaudeHaiku;
+/// The default model ID — Groq (Llama) is fast and free.
+const kDefaultModel = kModelGroq;
 
 class AiModelNotifier extends AsyncNotifier<String> {
   late SharedPreferences _prefs;
@@ -21,11 +21,6 @@ class AiModelNotifier extends AsyncNotifier<String> {
   Future<String> build() async {
     _prefs = await SharedPreferences.getInstance();
     final stored = _prefs.getString(_prefsKey) ?? kDefaultModel;
-    // Migrate: groq is not configured on the backend — fall back to default.
-    if (stored == kModelGroq) {
-      await _prefs.setString(_prefsKey, kDefaultModel);
-      return kDefaultModel;
-    }
     return stored;
   }
 
