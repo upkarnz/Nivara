@@ -23,6 +23,7 @@ async def stream_groq_response(
         raise RuntimeError("GROQ_API_KEY environment variable is not set")
 
     today = datetime.now()
+    logger.info("groq_service: today=%s", today.strftime('%Y-%m-%d'))
     system_prompt = (
         f"You are {assistant_name}, a warm and caring AI companion.\n\n"
         f"Today is {today.strftime('%A, %B %-d, %Y')}.\n\n"
