@@ -12,10 +12,17 @@ from routers import chat, memory
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Support base64-encoded JSON in env var (Railway/production) or a local file (dev)
+    # Support multiple credential formats:
+    # 1. FIREBASE_SERVICE_ACCOUNT_BASE64 — base64-encoded JSON (Railway preferred)
+    # 2. FIREBASE_SERVICE_ACCOUNT — raw JSON string
+    # 3. FIREBASE_SERVICE_ACCOUNT_PATH / serviceAccountKey.json — file path (local dev)
     encoded = os.environ.get("FIREBASE_SERVICE_ACCOUNT_BASE64")
+    raw_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
     if encoded:
         service_account_info = json.loads(base64.b64decode(encoded).decode())
+        cred = credentials.Certificate(service_account_info)
+    elif raw_json:
+        service_account_info = json.loads(raw_json)
         cred = credentials.Certificate(service_account_info)
     else:
         path = os.environ.get("FIREBASE_SERVICE_ACCOUNT_PATH", "serviceAccountKey.json")
