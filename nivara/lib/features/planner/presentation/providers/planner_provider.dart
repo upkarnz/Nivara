@@ -29,8 +29,9 @@ class PlannerNotifier extends _$PlannerNotifier {
   Future<List<Event>> build() => _load();
 
   Future<List<Event>> _load() async {
-    final from = DateTime.now().subtract(const Duration(days: 1));
-    final to = DateTime.now().add(const Duration(days: 30));
+    // Wide backward window so events saved with wrong years are still visible.
+    final from = DateTime.now().subtract(const Duration(days: 800));
+    final to = DateTime.now().add(const Duration(days: 90));
     final firestoreRepo = ref.read(firestoreCalendarRepositoryProvider);
     final firestoreEvents =
         await firestoreRepo.watchEvents(from: from, to: to).first;
@@ -48,8 +49,8 @@ class PlannerNotifier extends _$PlannerNotifier {
   }
 
   Future<void> refresh() async {
-    final from = DateTime.now().subtract(const Duration(days: 1));
-    final to = DateTime.now().add(const Duration(days: 30));
+    final from = DateTime.now().subtract(const Duration(days: 800));
+    final to = DateTime.now().add(const Duration(days: 90));
     try {
       await ref.read(calendarSyncServiceProvider).sync(from: from, to: to);
     } catch (_) {

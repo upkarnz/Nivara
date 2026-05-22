@@ -26,11 +26,6 @@ const _allModels = [
     subtitle: 'Free · Fastest responses',
   ),
   _ModelRow(
-    id: kModelGeminiFlash,
-    label: 'Gemini 2.0 Flash',
-    subtitle: 'Default — gives you the most messages',
-  ),
-  _ModelRow(
     id: kModelGpt4oMini,
     label: 'GPT-4o Mini',
     subtitle: 'Better for research',
@@ -54,9 +49,9 @@ const _allModels = [
 
 /// Tier-aware model selector.
 ///
-/// - Free: only Gemini Flash selectable; all others show a lock icon.
-/// - Pro: Gemini Flash, GPT-4o Mini, Claude Haiku selectable.
-/// - Premium: all five models selectable.
+/// - Free: only Groq selectable; all others show a lock icon.
+/// - Pro: Groq, GPT-4o Mini, Claude Haiku selectable.
+/// - Premium: all models selectable.
 ///
 /// Each row displays the dynamic monthly message quota for the selected tier.
 class ModelSelectorWidget extends ConsumerWidget {
@@ -80,9 +75,8 @@ class ModelSelectorWidget extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Text(
-              'Groq is free and the fastest. Gemini Flash gives you the most '
-              'messages. Switch to other models for deeper research or '
-              'higher quality responses.',
+              'Groq is free and the fastest. Switch to other models for '
+              'deeper research or higher quality responses.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color:
                         Theme.of(context).colorScheme.onSurfaceVariant,

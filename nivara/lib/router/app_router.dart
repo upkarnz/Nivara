@@ -13,6 +13,7 @@ import '../features/mood/presentation/pages/mood_board_page.dart';
 import '../features/music/presentation/pages/music_page.dart';
 import '../features/profile/presentation/pages/assistant_setup_page.dart';
 import '../features/profile/presentation/pages/profile_setup_page.dart';
+import '../features/settings/presentation/pages/settings_page.dart';
 import '../voice/voice_settings_page.dart';
 import '../shared/widgets/app_shell.dart';
 
@@ -49,6 +50,10 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(
         path: '/assistant-setup',
         builder: (context, state) => const AssistantSetupPage(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsPage(),
       ),
       GoRoute(
         path: '/settings/voice',

@@ -9,7 +9,12 @@ part 'google_calendar_repository.g.dart';
 
 const _calendarScope = 'https://www.googleapis.com/auth/calendar';
 
-@riverpod
+// keepAlive: true — preserves the GoogleSignIn instance (and its authenticated
+// state) across the whole app lifetime. Without this, a fresh GoogleSignIn is
+// created each time the provider is read after auto-disposal, and
+// signInSilently() may not restore the session in time for non-interactive callers
+// like ChatNotifier.
+@Riverpod(keepAlive: true)
 GoogleCalendarRepository googleCalendarRepository(
     // ignore: deprecated_member_use_from_same_package
     GoogleCalendarRepositoryRef ref) {

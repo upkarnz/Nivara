@@ -55,31 +55,31 @@ class TierConfig {
           wakeWordLimitIsMonthly: false,
           elevenLabsEnabled: false,
           modelOverrideAllowed: true,
-          availableModels: ['groq', 'gemini_flash'],
+          availableModels: ['groq'],
         );
       case SubscriptionTier.pro:
         return const TierConfig(
           monthlyBudgetUsd: 1.00,
-          defaultModel: 'gemini_flash',
+          defaultModel: 'groq',
           historyDays: null,
           musicEnabled: true,
           wakeWordLimit: 30,
           wakeWordLimitIsMonthly: true,
           elevenLabsEnabled: false,
           modelOverrideAllowed: true,
-          availableModels: ['groq', 'gemini_flash', 'gpt4o_mini', 'claude_haiku'],
+          availableModels: ['groq', 'gpt4o_mini', 'claude_haiku'],
         );
       case SubscriptionTier.premium:
         return const TierConfig(
           monthlyBudgetUsd: 9.00,
-          defaultModel: 'gemini_flash',
+          defaultModel: 'groq',
           historyDays: null,
           musicEnabled: true,
           wakeWordLimit: null,
           wakeWordLimitIsMonthly: true,
           elevenLabsEnabled: true,
           modelOverrideAllowed: true,
-          availableModels: ['groq', 'gemini_flash', 'gpt4o_mini', 'claude_haiku', 'claude_sonnet', 'gpt4o'],
+          availableModels: ['groq', 'gpt4o_mini', 'claude_haiku', 'claude_sonnet', 'gpt4o'],
         );
     }
   }

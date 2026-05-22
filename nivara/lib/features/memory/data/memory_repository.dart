@@ -40,4 +40,19 @@ class MemoryRepository {
       throw Exception('deleteMemory failed: ${response.statusCode}');
     }
   }
+
+  Future<void> updateMemory(
+      String idToken, String memoryId, String newContent) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/v1/memory/$memoryId'),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'content': newContent}),
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('updateMemory failed: ${response.statusCode}');
+    }
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/planner/data/google_calendar_repository.dart';
+import '../features/profile/presentation/providers/profile_provider.dart';
 import '../features/settings/presentation/widgets/model_selector_widget.dart';
 import '../features/subscription/presentation/providers/subscription_providers.dart';
 import '../features/subscription/presentation/widgets/paywall_sheet.dart';
@@ -25,25 +26,17 @@ class VoiceSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
-  late final TextEditingController _porcupineCtrl;
-  late final TextEditingController _googleCloudCtrl;
   late final TextEditingController _elevenLabsCtrl;
-  bool _obscurePorcupine = true;
-  bool _obscureGoogleCloud = true;
   bool _obscureElevenLabs = true;
 
   @override
   void initState() {
     super.initState();
-    _porcupineCtrl = TextEditingController();
-    _googleCloudCtrl = TextEditingController();
     _elevenLabsCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
-    _porcupineCtrl.dispose();
-    _googleCloudCtrl.dispose();
     _elevenLabsCtrl.dispose();
     super.dispose();
   }
@@ -64,14 +57,6 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (settings) {
           // Keep text fields in sync when settings load.
-          if (_porcupineCtrl.text.isEmpty &&
-              settings.porcupineAccessKey.isNotEmpty) {
-            _porcupineCtrl.text = settings.porcupineAccessKey;
-          }
-          if (_googleCloudCtrl.text.isEmpty &&
-              settings.googleCloudApiKey.isNotEmpty) {
-            _googleCloudCtrl.text = settings.googleCloudApiKey;
-          }
           if (_elevenLabsCtrl.text.isEmpty &&
               settings.elevenLabsApiKey.isNotEmpty) {
             _elevenLabsCtrl.text = settings.elevenLabsApiKey;
@@ -95,143 +80,28 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
               ),
 
               // ── STT option ──────────────────────────────────────────────
-              RadioListTile<WakeWordEngine>(
-                value: WakeWordEngine.stt,
-                groupValue: settings.engine,
-                title: const Text('Built-in (speech recognition)'),
-                subtitle: const Text(
-                  'No API key required. Uses on-device speech recognition '
-                  'to listen for the wake word "Nivara".',
-                  style: TextStyle(fontSize: 12, color: Colors.white54),
-                ),
-                onChanged: (v) {
-                  if (v != null) {
-                    ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setEngine(v);
-                  }
-                },
-              ),
-
-              // ── Porcupine option ─────────────────────────────────────────
-              RadioListTile<WakeWordEngine>(
-                value: WakeWordEngine.porcupine,
-                groupValue: settings.engine,
-                title: const Text('Porcupine (custom wake word)'),
-                subtitle: const Text(
-                  'High-accuracy, always-on wake word detection by Picovoice. '
-                  'Requires a free AccessKey from console.picovoice.ai.',
-                  style: TextStyle(fontSize: 12, color: Colors.white54),
-                ),
-                onChanged: (v) {
-                  if (v != null) {
-                    ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setEngine(v);
-                  }
-                },
-              ),
-
-              // ── Porcupine AccessKey field (conditional) ──────────────────
-              if (settings.engine == WakeWordEngine.porcupine)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: TextField(
-                    key: const Key('porcupine_key_field'),
-                    controller: _porcupineCtrl,
-                    obscureText: _obscurePorcupine,
-                    decoration: InputDecoration(
-                      labelText: 'Picovoice AccessKey',
-                      hintText: 'Paste your AccessKey here',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePorcupine
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () =>
-                            setState(() => _obscurePorcupine = !_obscurePorcupine),
-                      ),
-                    ),
-                    onSubmitted: (key) => ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setPorcupineAccessKey(key.trim()),
-                    onEditingComplete: () {},
+              Builder(builder: (context) {
+                final assistantCfg =
+                    ref.watch(assistantConfigProvider).valueOrNull;
+                final wakeWordName = assistantCfg?.name ?? 'Rocky';
+                return RadioListTile<WakeWordEngine>(
+                  value: WakeWordEngine.stt,
+                  groupValue: settings.engine,
+                  title: const Text('Built-in (speech recognition)'),
+                  subtitle: Text(
+                    'No API key required. Uses on-device speech recognition '
+                    'to listen for the wake word "$wakeWordName".',
+                    style: const TextStyle(fontSize: 12, color: Colors.white54),
                   ),
-                ),
-
-              if (settings.engine == WakeWordEngine.porcupine)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: ElevatedButton(
-                    onPressed: () => ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setPorcupineAccessKey(_porcupineCtrl.text.trim()),
-                    child: const Text('Save AccessKey'),
-                  ),
-                ),
-
-              // ── Google Cloud STT option ──────────────────────────────────
-              RadioListTile<WakeWordEngine>(
-                value: WakeWordEngine.googleCloud,
-                groupValue: settings.engine,
-                title: const Text('Google Cloud Speech-to-Text'),
-                subtitle: const Text(
-                  'High-accuracy cloud STT for wake word detection. '
-                  'Requires a Google Cloud API key with Speech-to-Text enabled.',
-                  style: TextStyle(fontSize: 12, color: Colors.white54),
-                ),
-                onChanged: (v) {
-                  if (v != null) {
-                    ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setEngine(v);
-                  }
-                },
-              ),
-
-              // ── Google Cloud API key field (conditional) ─────────────────
-              if (settings.engine == WakeWordEngine.googleCloud)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: TextField(
-                    key: const Key('google_cloud_key_field'),
-                    controller: _googleCloudCtrl,
-                    obscureText: _obscureGoogleCloud,
-                    decoration: InputDecoration(
-                      labelText: 'Google Cloud API Key',
-                      hintText: 'Paste your API key here',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureGoogleCloud
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () => setState(
-                            () => _obscureGoogleCloud = !_obscureGoogleCloud),
-                      ),
-                    ),
-                    onSubmitted: (key) => ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setGoogleCloudApiKey(key.trim()),
-                    onEditingComplete: () {},
-                  ),
-                ),
-
-              if (settings.engine == WakeWordEngine.googleCloud)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: ElevatedButton(
-                    onPressed: () => ref
-                        .read(voiceSettingsProvider.notifier)
-                        .setGoogleCloudApiKey(_googleCloudCtrl.text.trim()),
-                    child: const Text('Save API Key'),
-                  ),
-                ),
+                  onChanged: (v) {
+                    if (v != null) {
+                      ref
+                          .read(voiceSettingsProvider.notifier)
+                          .setEngine(v);
+                    }
+                  },
+                );
+              }),
 
               const Divider(height: 32),
 

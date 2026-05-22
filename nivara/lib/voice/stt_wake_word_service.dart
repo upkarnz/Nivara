@@ -1,17 +1,19 @@
 import 'package:speech_to_text/speech_to_text.dart';
 import 'wake_word_service.dart';
 
-/// Detects the wake word "nivara" using continuous 8-second STT bursts.
+/// Detects a configurable wake word using continuous 8-second STT bursts.
 ///
 /// No API key required — uses the on-device speech recogniser.
+/// Pass [keyword] (lower-case) to override the default wake word.
 class SttWakeWordService implements WakeWordService {
-  SttWakeWordService() : _stt = SpeechToText();
+  SttWakeWordService({String keyword = 'nivara'})
+      : _keyword = keyword.toLowerCase(),
+        _stt = SpeechToText();
 
   final SpeechToText _stt;
+  final String _keyword;
   void Function()? _onWakeWord;
   bool _running = false;
-
-  static const _keyword = 'nivara';
   static const _listenDuration = Duration(seconds: 8);
 
   @override

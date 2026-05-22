@@ -7,12 +7,12 @@ part of 'google_calendar_repository.dart';
 // **************************************************************************
 
 String _$googleCalendarRepositoryHash() =>
-    r'887d6753bbb077101cfd5b6132b602bae82d94ea';
+    r'4704bfd539c50be8dc1f6d9c034cd1258bfcdc2f';
 
 /// See also [googleCalendarRepository].
 @ProviderFor(googleCalendarRepository)
 final googleCalendarRepositoryProvider =
-    AutoDisposeProvider<GoogleCalendarRepository>.internal(
+    Provider<GoogleCalendarRepository>.internal(
   googleCalendarRepository,
   name: r'googleCalendarRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -24,7 +24,6 @@ final googleCalendarRepositoryProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef GoogleCalendarRepositoryRef
-    = AutoDisposeProviderRef<GoogleCalendarRepository>;
+typedef GoogleCalendarRepositoryRef = ProviderRef<GoogleCalendarRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../domain/message.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -25,37 +26,82 @@ class MessageBubble extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: isUser
-                  ? const Color(0xFF6366F1)
-                  : const Color(0xFF1A1A24),
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16),
             ),
             child: message.isStreaming
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        message.content,
-                        style: const TextStyle(color: Colors.white),
+                      Flexible(
+                        child: _MessageContent(
+                          content: message.content,
+                          isUser: isUser,
+                        ),
                       ),
                       const SizedBox(width: 4),
-                      const SizedBox(
+                      SizedBox(
                         width: 10,
                         height: 10,
                         child: CircularProgressIndicator(
                           strokeWidth: 1.5,
-                          color: Colors.white54,
+                          color: isUser
+                              ? Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7)
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   )
-                : Text(
-                    message.content,
-                    style: const TextStyle(color: Colors.white),
+                : _MessageContent(
+                    content: message.content,
+                    isUser: isUser,
                   ),
           ),
           if (message.scheduledEvent != null)
             _EventCard(event: message.scheduledEvent!),
         ],
+      ),
+    );
+  }
+}
+
+/// Renders user messages as plain text, assistant messages as markdown.
+class _MessageContent extends StatelessWidget {
+  const _MessageContent({required this.content, required this.isUser});
+
+  final String content;
+  final bool isUser;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = isUser
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.onSurface;
+
+    if (isUser) {
+      return Text(content, style: TextStyle(color: textColor));
+    }
+
+    // Assistant messages: render markdown so bold, lists, etc. display correctly.
+    return MarkdownBody(
+      data: content,
+      shrinkWrap: true,
+      styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+        p: TextStyle(color: textColor, fontSize: 14),
+        strong: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14),
+        em: TextStyle(color: textColor, fontStyle: FontStyle.italic, fontSize: 14),
+        listBullet: TextStyle(color: textColor, fontSize: 14),
+        code: TextStyle(
+          color: textColor,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          fontFamily: 'monospace',
+          fontSize: 13,
+        ),
+        blockquote: TextStyle(color: textColor.withValues(alpha: 0.7), fontSize: 14),
+        h1: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),
+        h2: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 16),
+        h3: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 15),
       ),
     );
   }
@@ -88,26 +134,27 @@ class _EventCard extends StatelessWidget {
     final start = _formatTime(event['start'] as String?);
     final end = _formatTime(event['end'] as String?);
 
+    final cs = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 4, right: 64),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2A3A),
+        color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF6366F1), width: 1),
+        border: Border.all(color: cs.primary, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.event, color: Color(0xFF6366F1), size: 18),
+          Icon(Icons.event, color: cs.primary, size: 18),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: cs.onSurface,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -115,7 +162,7 @@ class _EventCard extends StatelessWidget {
               if (start.isNotEmpty)
                 Text(
                   end.isNotEmpty ? '$start – $end' : start,
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
                 ),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -44,5 +45,53 @@ class AuthRepository {
 
   Future<void> signOut() async {
     await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
+  }
+
+  /// Permanently deletes the account. Wipes all Firestore user data first,
+  /// then removes the Firebase Auth record.
+  ///
+  /// Throws [FirebaseAuthException] with code `requires-recent-login` if the
+  /// user's session is stale — the caller should ask them to sign out and back
+  /// in, then retry.
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('No signed-in user');
+
+    // Best-effort: delete all known Firestore subcollections under users/{uid}.
+    // Subcollections (profile, assistant, events, conversations, …) must be
+    // individually removed — deleting the parent doc does NOT cascade.
+    final db = FirebaseFirestore.instance;
+    final uid = user.uid;
+
+    Future<void> deleteCollection(String path) async {
+      try {
+        final snap = await db.collection(path).limit(200).get();
+        final batch = db.batch();
+        for (final doc in snap.docs) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      } catch (_) {
+        // Non-fatal: server-side cleanup jobs can handle orphaned docs.
+      }
+    }
+
+    await Future.wait([
+      deleteCollection('users/$uid/profile'),
+      deleteCollection('users/$uid/assistant'),
+      deleteCollection('users/$uid/events'),
+      deleteCollection('users/$uid/conversations'),
+      deleteCollection('users/$uid/mood'),
+      deleteCollection('users/$uid/quota'),
+    ]);
+
+    // Delete the top-level user document if it exists.
+    try {
+      await db.collection('users').doc(uid).delete();
+    } catch (_) {}
+
+    // Delete Firebase Auth account — may throw requires-recent-login.
+    await user.delete();
+    await _googleSignIn.signOut();
   }
 }

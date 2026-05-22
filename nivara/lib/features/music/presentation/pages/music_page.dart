@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:nivara/features/music/data/spotify_settings_provider.dart';
 import 'package:nivara/features/music/domain/music_track.dart';
 import 'package:nivara/features/music/presentation/providers/mood_playlist_provider.dart';
 import 'package:nivara/features/music/presentation/providers/music_player_notifier.dart';
@@ -59,11 +61,34 @@ class MusicPage extends ConsumerWidget {
     final state = ref.watch(musicPlayerNotifierProvider);
     final notifier = ref.read(musicPlayerNotifierProvider.notifier);
     final playlistAsync = ref.watch(moodPlaylistProvider);
+    final spotify =
+        ref.watch(spotifySettingsProvider).valueOrNull ?? const SpotifySettings();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Music'),
         actions: [
+          // Spotify indicator / connect shortcut
+          if (spotify.connected)
+            const Padding(
+              padding: EdgeInsets.only(right: 4),
+              child: Chip(
+                avatar: Icon(Icons.music_note,
+                    color: Colors.white, size: 14),
+                label: Text('Spotify',
+                    style: TextStyle(fontSize: 11, color: Colors.white)),
+                backgroundColor: Color(0xFF1DB954),
+                padding: EdgeInsets.zero,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            )
+          else
+            TextButton.icon(
+              onPressed: () => context.push('/settings'),
+              icon: const Icon(Icons.link, size: 16),
+              label: const Text('Connect Spotify',
+                  style: TextStyle(fontSize: 12)),
+            ),
           // Mood auto-play toggle
           Row(
             children: [
@@ -78,6 +103,29 @@ class MusicPage extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          // ----- Spotify mood hint -----
+          if (spotify.connected)
+            Container(
+              color: const Color(0xFF1DB954).withValues(alpha: 0.12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: const Row(
+                children: [
+                  Icon(Icons.auto_awesome,
+                      size: 16, color: Color(0xFF1DB954)),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Spotify connected — mood detection active. '
+                      'Playlist updates automatically based on your mood.',
+                      style:
+                          TextStyle(fontSize: 12, color: Color(0xFF1DB954)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           // ----- Player section -----
           Expanded(
             flex: 3,

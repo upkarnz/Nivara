@@ -18,16 +18,14 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
     final eventsAsync = ref.watch(plannerNotifierProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF13131F),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF13131F),
         title: const Text(
           'Planner',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white70),
+            icon: const Icon(Icons.refresh),
             onPressed: () =>
                 ref.read(plannerNotifierProvider.notifier).refresh(),
           ),
@@ -35,8 +33,7 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddEventSheet(context),
-        backgroundColor: const Color(0xFF7C6EF7),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add),
       ),
       body: eventsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -57,7 +54,6 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E1E2E),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -185,7 +181,6 @@ class _AddEventSheetState extends State<_AddEventSheet> {
           const Text(
             'Add Event',
             style: TextStyle(
-              color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -194,25 +189,15 @@ class _AddEventSheetState extends State<_AddEventSheet> {
           TextField(
             controller: _titleCtrl,
             autofocus: true,
-            style: const TextStyle(color: Colors.white),
             decoration: const InputDecoration(
               labelText: 'Title',
-              labelStyle: TextStyle(color: Colors.white54),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white24),
-              ),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _descCtrl,
-            style: const TextStyle(color: Colors.white),
             decoration: const InputDecoration(
               labelText: 'Description (optional)',
-              labelStyle: TextStyle(color: Colors.white54),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white24),
-              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -232,10 +217,6 @@ class _AddEventSheetState extends State<_AddEventSheet> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _saving ? null : _save,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7C6EF7),
-                foregroundColor: Colors.white,
-              ),
               child: _saving
                   ? const SizedBox(
                       width: 20,
@@ -274,16 +255,20 @@ class _DateTimeRow extends StatelessWidget {
           children: [
             Text(
               '$label:  ',
-              style:
-                  const TextStyle(color: Colors.white54, fontSize: 13),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 13),
             ),
             Text(
               value,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 13),
             ),
             const Spacer(),
-            const Icon(Icons.edit_outlined,
-                size: 16, color: Colors.white38),
+            Icon(Icons.edit_outlined,
+                size: 16,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),
@@ -300,20 +285,24 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final cs = Theme.of(context).colorScheme;
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.calendar_today_outlined, color: Colors.white24, size: 48),
-          SizedBox(height: 12),
+          Icon(Icons.calendar_today_outlined,
+              color: cs.onSurfaceVariant.withValues(alpha: 0.4), size: 48),
+          const SizedBox(height: 12),
           Text(
             'No events in the next 30 days',
-            style: TextStyle(color: Colors.white38),
+            style: TextStyle(color: cs.onSurfaceVariant),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Tap + to add an event',
-            style: TextStyle(color: Colors.white24, fontSize: 12),
+            style: TextStyle(
+                color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                fontSize: 12),
           ),
         ],
       ),
@@ -348,8 +337,8 @@ class _EventList extends ConsumerWidget {
               padding: const EdgeInsets.only(top: 16, bottom: 8),
               child: Text(
                 _dayLabel(day),
-                style: const TextStyle(
-                  color: Colors.white54,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,

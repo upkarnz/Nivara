@@ -32,11 +32,13 @@ class EventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final tile = Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2E),
+        color: cs.surface,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
       child: IntrinsicHeight(
         child: Row(
@@ -62,16 +64,16 @@ class EventTile extends StatelessWidget {
                   children: [
                     Text(
                       event.title,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: cs.onSurface,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       _timeLabel,
-                      style:
-                          const TextStyle(color: Colors.white54, fontSize: 12),
+                      style: TextStyle(
+                          color: cs.onSurfaceVariant, fontSize: 12),
                     ),
                   ],
                 ),
@@ -79,8 +81,8 @@ class EventTile extends StatelessWidget {
             ),
             if (onDelete != null)
               IconButton(
-                icon: const Icon(Icons.delete_outline,
-                    color: Colors.white38, size: 20),
+                icon: Icon(Icons.delete_outline,
+                    color: cs.onSurfaceVariant, size: 20),
                 onPressed: () => _confirmDelete(context),
                 tooltip: 'Delete event',
               ),

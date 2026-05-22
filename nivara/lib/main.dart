@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app_theme.dart';
 import 'features/subscription/data/revenue_cat_service.dart';
+import 'shared/providers/theme_provider.dart';
 import 'firebase_options.dart';
 import 'router/app_router.dart';
 import 'services/mood_notification_service.dart';
@@ -70,11 +71,13 @@ class NivaraApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode =
+        ref.watch(themeModeProvider).valueOrNull ?? ThemeMode.dark;
     return MaterialApp.router(
       title: 'Nivara',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.dark,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -15,11 +16,14 @@ import 'wake_word_service.dart';
 import 'stt_wake_word_service.dart';
 import 'porcupine_wake_word_service.dart';
 import 'google_cloud_wake_word_service.dart';
+import '../features/chat/domain/message.dart';
+import '../features/chat/presentation/providers/chat_provider.dart';
 import '../features/music/domain/mood_category.dart';
 import '../features/music/presentation/providers/mood_playlist_provider.dart';
 import '../features/music/presentation/providers/music_player_notifier.dart';
 import '../features/subscription/data/wake_word_quota_repository.dart';
 import '../features/subscription/presentation/providers/subscription_providers.dart';
+import '../features/profile/presentation/providers/profile_provider.dart';
 import 'music_command.dart';
 
 // ---------------------------------------------------------------------------
@@ -56,11 +60,26 @@ class VoiceNotifier extends Notifier<VoiceState> {
   }
 
   Future<void> _init() async {
-    // Request microphone permission once.
-    final status = await Permission.microphone.request();
-    if (!status.isGranted) return;
-
-    _sttReady = await _stt.initialize();
+    // Let speech_to_text handle its own permission dialog on iOS.
+    // permission_handler can sometimes fail silently on simulators.
+    _sttReady = await _stt.initialize(
+      onError: (e) => debugPrint('[Voice] STT init error: $e'),
+      onStatus: (s) => debugPrint('[Voice] STT status: $s'),
+    );
+    debugPrint('[Voice] STT initialised: $_sttReady');
+    if (!_sttReady) {
+      // Fallback: try permission_handler then retry
+      final status = await Permission.microphone.request();
+      debugPrint('[Voice] Mic permission: $status');
+      if (status.isGranted) {
+        _sttReady = await _stt.initialize(
+          onError: (e) => debugPrint('[Voice] STT retry error: $e'),
+          onStatus: (s) => debugPrint('[Voice] STT retry status: $s'),
+        );
+        debugPrint('[Voice] STT retry: $_sttReady');
+      }
+      if (!_sttReady) return;
+    }
 
     final settings = await ref.read(voiceSettingsProvider.future);
 
@@ -91,7 +110,10 @@ class VoiceNotifier extends Notifier<VoiceState> {
         settings.googleCloudApiKey.isNotEmpty) {
       return GoogleCloudWakeWordService(apiKey: settings.googleCloudApiKey);
     }
-    return SttWakeWordService();
+    // Use the configured assistant name as the wake word (default: 'Rocky').
+    final assistantCfg = ref.read(assistantConfigProvider).valueOrNull;
+    final keyword = (assistantCfg?.name ?? 'Rocky').toLowerCase();
+    return SttWakeWordService(keyword: keyword);
   }
 
   Future<void> _onWakeWordDetected() async {
@@ -125,9 +147,11 @@ class VoiceNotifier extends Notifier<VoiceState> {
 
   void _startListening() {
     if (!_sttReady) {
+      debugPrint('[Voice] _startListening: STT not ready, aborting');
       state = VoiceState.idle;
       return;
     }
+    debugPrint('[Voice] _startListening: STT listen started');
     _stt.listen(
       onResult: (result) {
         if (result.finalResult) {
@@ -153,8 +177,27 @@ class VoiceNotifier extends Notifier<VoiceState> {
       return;
     }
 
-    // No music command — fall through to normal AI processing.
-    await _speak('Processing: $transcript');
+    // Send to AI chat and wait for the full response.
+    try {
+      final chatNotifier = ref.read(chatNotifierProvider.notifier);
+      await chatNotifier.sendMessage(transcript);
+
+      // Retrieve the last completed assistant message.
+      final messages = ref.read(chatNotifierProvider);
+      final lastAssistant = messages.lastWhere(
+        (m) => m.role == MessageRole.assistant && !m.isStreaming,
+        orElse: () =>
+            const ChatMessage(role: MessageRole.assistant, content: ''),
+      );
+
+      if (lastAssistant.content.isNotEmpty) {
+        await _speak(lastAssistant.content);
+      } else {
+        state = VoiceState.idle;
+      }
+    } catch (_) {
+      state = VoiceState.idle;
+    }
   }
 
   Future<void> _executeMusicCommand(MusicCommand cmd) async {
@@ -197,8 +240,42 @@ class VoiceNotifier extends Notifier<VoiceState> {
   /// Whether the speech-to-text engine initialised successfully.
   bool get isSttReady => _sttReady;
 
-  /// Manually triggers a listening session (mirrors wake-word detection).
-  void startListening() => unawaited(_onWakeWordDetected());
+  /// Manually triggers a listening session (bypasses wake-word quota).
+  void startListening() {
+    if (state != VoiceState.idle) return;
+    if (!_sttReady) {
+      // STT not ready yet — try re-initialising in the background.
+      debugPrint('[Voice] STT not ready, re-initialising…');
+      unawaited(_initStt());
+      return;
+    }
+    debugPrint('[Voice] Manual mic tap — starting listen');
+    state = VoiceState.listening;
+    _startListening();
+  }
+
+  /// Initialises only the STT engine (called on retry).
+  Future<void> _initStt() async {
+    // Let STT handle permission itself first
+    _sttReady = await _stt.initialize(
+      onError: (e) => debugPrint('[Voice] STT error: $e'),
+      onStatus: (s) => debugPrint('[Voice] STT status: $s'),
+    );
+    if (!_sttReady) {
+      final status = await Permission.microphone.request();
+      debugPrint('[Voice] Mic permission on retry: $status');
+      if (!status.isGranted) return;
+      _sttReady = await _stt.initialize(
+        onError: (e) => debugPrint('[Voice] STT error: $e'),
+        onStatus: (s) => debugPrint('[Voice] STT status: $s'),
+      );
+    }
+    debugPrint('[Voice] STT ready: $_sttReady');
+    if (_sttReady) {
+      state = VoiceState.listening;
+      _startListening();
+    }
+  }
 
   /// Submits [text] directly, bypassing speech recognition.
   void sendTextMessage(String text) => unawaited(_handleTranscript(text));

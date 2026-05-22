@@ -15,7 +15,8 @@ import '../../../subscription/presentation/widgets/quota_indicator.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/message_bubble.dart';
-import '../../../../../voice/voice_fab.dart';
+import '../../../../../voice/voice_provider.dart';
+import '../../../../../voice/voice_state.dart';
 import '../../../mood/presentation/widgets/check_in_card.dart';
 import '../../../mood/presentation/providers/mood_provider.dart';
 import '../../../../services/mood_notification_service.dart';
@@ -72,8 +73,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final tier =
         ref.watch(subscriptionProvider).valueOrNull ?? SubscriptionTier.free;
 
+    final voiceState = ref.watch(voiceProvider);
+    final voiceNotifier = ref.read(voiceProvider.notifier);
+
     return Scaffold(
-      floatingActionButton: const VoiceFab(),
       appBar: AppBar(
         title: configAsync.when(
           data: (c) => Text(c?.name ?? 'Nivara'),
@@ -82,6 +85,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         ),
         backgroundColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.music_note_outlined),
+            tooltip: 'Music',
+            onPressed: () => context.push('/music'),
+          ),
           IconButton(
             icon: const Icon(Icons.calendar_month_outlined),
             tooltip: 'Planner',
@@ -99,8 +107,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Voice settings',
-            onPressed: () => context.push('/settings/voice'),
+            tooltip: 'Settings',
+            onPressed: () => context.push('/settings'),
           ),
           IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -130,9 +138,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         padding: const EdgeInsets.all(32),
                         child: Text(
                           _greeting(c),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
-                            color: Colors.white60,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -149,6 +157,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           ChatInputBar(
             enabled: !isStreaming,
+            voiceState: voiceState,
+            onMicTap: switch (voiceState) {
+              VoiceState.idle => voiceNotifier.startListening,
+              VoiceState.listening => () => unawaited(voiceNotifier.stopAll()),
+              VoiceState.processing => null,
+              VoiceState.speaking => () => unawaited(voiceNotifier.stopAll()),
+            },
             onSend: (text) {
               if (quotaState?.exhausted == true) {
                 showModalBottomSheet(

@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:graphview/GraphView.dart';
 
 import '../../domain/memory.dart';
 
@@ -33,9 +32,9 @@ String _labelFor(String type) =>
     _typeLabels[type] ?? type.replaceAll('_', ' ');
 
 /// Obsidian-style force-directed graph for memories.
-/// - Auto-fits all nodes within the visible area on first load.
-/// - Zoom-in / zoom-out / fit-to-screen buttons in the bottom-right corner.
-/// - Pan by dragging anywhere on the graph.
+/// Uses a manual circular layout: cluster nodes in a circle, memory nodes
+/// orbiting their cluster. No third-party layout algorithm — predictable,
+/// readable at any scale.
 class MemoryGraphView extends StatefulWidget {
   const MemoryGraphView({
     super.key,
@@ -52,9 +51,6 @@ class MemoryGraphView extends StatefulWidget {
 
 class _MemoryGraphViewState extends State<MemoryGraphView>
     with SingleTickerProviderStateMixin {
-  late Graph _graph;
-  late FruchtermanReingoldAlgorithm _algorithm;
-
   final _transformController = TransformationController();
   BoxConstraints? _lastConstraints;
   bool _didFit = false;
@@ -62,10 +58,11 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
   Matrix4? _animStart;
   Matrix4? _animEnd;
 
-  // node id → Memory (leaf nodes)
-  final Map<int, Memory> _memoryNodes = {};
-  // type → cluster node id
-  final Map<String, int> _clusterNodes = {};
+  // Computed layout
+  final Map<String, Offset> _clusterPositions = {};
+  final Map<Memory, Offset> _memoryPositions = {};
+  double _graphW = 400;
+  double _graphH = 400;
 
   @override
   void initState() {
@@ -74,7 +71,7 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     )..addListener(_onAnimTick);
-    _buildGraph();
+    _computeLayout();
   }
 
   void _onAnimTick() {
@@ -98,85 +95,84 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
     if (old.memories != widget.memories) {
       setState(() {
         _didFit = false;
-        _buildGraph();
+        _computeLayout();
       });
     }
   }
 
-  // ── Graph construction ────────────────────────────────────────────────────
+  // ── Circular layout ───────────────────────────────────────────────────────
 
-  void _buildGraph() {
-    _graph = Graph()..isTree = false;
-    _memoryNodes.clear();
-    _clusterNodes.clear();
+  void _computeLayout() {
+    _clusterPositions.clear();
+    _memoryPositions.clear();
 
-    final types = widget.memories.map((m) => m.memoryType).toSet();
-    var nodeId = 1;
-    for (final type in types) {
-      _clusterNodes[type] = nodeId++;
-      _graph.addNode(Node.Id(_clusterNodes[type]!));
-    }
+    final types = widget.memories.map((m) => m.memoryType).toSet().toList();
+    if (types.isEmpty) return;
 
-    for (final mem in widget.memories) {
-      final memNodeId = nodeId++;
-      _memoryNodes[memNodeId] = mem;
-      _graph.addNode(Node.Id(memNodeId));
-      _graph.addEdge(
-        Node.Id(_clusterNodes[mem.memoryType]!),
-        Node.Id(memNodeId),
+    // Scale cluster radius based on number of types so labels don't overlap.
+    final clusterR = math.max(110.0, types.length * 36.0);
+    // Memory nodes orbit at a fixed distance from their cluster.
+    const memR = 58.0;
+    const cx = 0.0, cy = 0.0;
+
+    for (var i = 0; i < types.length; i++) {
+      final type = types[i];
+      final clusterAngle = (i / types.length) * 2 * math.pi - math.pi / 2;
+      final clusterPos = Offset(
+        cx + clusterR * math.cos(clusterAngle),
+        cy + clusterR * math.sin(clusterAngle),
       );
+      _clusterPositions[type] = clusterPos;
+
+      final mems = widget.memories.where((m) => m.memoryType == type).toList();
+      for (var j = 0; j < mems.length; j++) {
+        final double memAngle;
+        if (mems.length == 1) {
+          // Single memory: place on far side from center
+          memAngle = clusterAngle + math.pi;
+        } else {
+          // Fan out around the radial direction
+          const fanSpread = math.pi * 0.9;
+          memAngle = clusterAngle +
+              math.pi -
+              fanSpread / 2 +
+              (j / (mems.length - 1)) * fanSpread;
+        }
+        _memoryPositions[mems[j]] = Offset(
+          clusterPos.dx + memR * math.cos(memAngle),
+          clusterPos.dy + memR * math.sin(memAngle),
+        );
+      }
     }
 
-    // Tighter layout: stronger attraction + weaker repulsion keeps nodes
-    // from spreading outside the viewport.
-    _algorithm = FruchtermanReingoldAlgorithm(
-      FruchtermanReingoldConfiguration(
-        iterations: 200,
-        attractionRate: 0.45,
-        attractionPercentage: 0.5,
-        repulsionRate: 0.08,
-        repulsionPercentage: 0.2,
-        clusterPadding: 8,
-      ),
-    );
+    // Compute bounding box → canvas size
+    final allPts = [
+      ..._clusterPositions.values,
+      ..._memoryPositions.values,
+    ];
+    const pad = 80.0;
+    final minX = allPts.map((p) => p.dx).reduce(math.min);
+    final maxX = allPts.map((p) => p.dx).reduce(math.max);
+    final minY = allPts.map((p) => p.dy).reduce(math.min);
+    final maxY = allPts.map((p) => p.dy).reduce(math.max);
+    _graphW = (maxX - minX) + pad * 2 + 120; // extra for cluster label width
+    _graphH = (maxY - minY) + pad * 2 + 40;
   }
 
   // ── Fit-to-screen ─────────────────────────────────────────────────────────
 
-  /// Reads the actual node positions computed by the algorithm after the first
-  /// layout pass and applies a transform that centres + fits the whole graph
-  /// within the visible viewport.
   void _fitToScreen({bool animated = false}) {
     final constraints = _lastConstraints;
     if (constraints == null) return;
+    if (_graphW <= 0 || _graphH <= 0) return;
 
-    final nodes = _graph.nodes;
-    if (nodes.isEmpty) return;
+    const margin = 24.0;
+    final scaleX = (constraints.maxWidth - margin * 2) / _graphW;
+    final scaleY = (constraints.maxHeight - margin * 2) / _graphH;
+    final scale = math.min(scaleX, scaleY).clamp(0.1, 3.0);
 
-    double minX = double.infinity, maxX = double.negativeInfinity;
-    double minY = double.infinity, maxY = double.negativeInfinity;
-
-    for (final node in nodes) {
-      final pos = node.position;
-      minX = math.min(minX, pos.dx);
-      maxX = math.max(maxX, pos.dx);
-      minY = math.min(minY, pos.dy);
-      maxY = math.max(maxY, pos.dy);
-    }
-
-    // Add generous padding so labels aren't clipped at the edge.
-    const pad = 60.0;
-    final graphW = (maxX - minX) + pad * 2;
-    final graphH = (maxY - minY) + pad * 2;
-
-    final scaleX = constraints.maxWidth / graphW;
-    final scaleY = constraints.maxHeight / graphH;
-    final scale = math.min(scaleX, scaleY).clamp(0.05, 1.0);
-
-    // Translation that centres the graph inside the viewport.
-    final tx = (constraints.maxWidth - graphW * scale) / 2 - (minX - pad) * scale;
-    final ty =
-        (constraints.maxHeight - graphH * scale) / 2 - (minY - pad) * scale;
+    final tx = (constraints.maxWidth - _graphW * scale) / 2;
+    final ty = (constraints.maxHeight - _graphH * scale) / 2;
 
     final target = Matrix4.identity()
       ..translate(tx, ty)
@@ -199,23 +195,19 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
     if (constraints == null) return;
 
     final currentScale = _transformController.value.getMaxScaleOnAxis();
-    final newScale = (currentScale * factor).clamp(0.05, 4.0);
+    final newScale = (currentScale * factor).clamp(0.05, 6.0);
     final actualFactor = newScale / currentScale;
 
     final cx = constraints.maxWidth / 2;
     final cy = constraints.maxHeight / 2;
 
-    // Scale around the viewport centre so the view doesn't jump.
     final scaleMatrix = Matrix4.identity()
       ..translate(cx, cy, 0)
       ..scale(actualFactor)
       ..translate(-cx, -cy, 0);
 
-    _transformController.value =
-        scaleMatrix * _transformController.value;
+    _transformController.value = scaleMatrix * _transformController.value;
   }
-
-  // ── Simple matrix animation ───────────────────────────────────────────────
 
   void _animateTo(Matrix4 target) {
     _animStart = _transformController.value.clone();
@@ -227,12 +219,13 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     if (widget.memories.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No memories yet.\nKeep chatting!',
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white54),
+          style: TextStyle(color: cs.onSurfaceVariant),
         ),
       );
     }
@@ -240,7 +233,6 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
     return LayoutBuilder(builder: (context, constraints) {
       _lastConstraints = constraints;
 
-      // After the algorithm has placed nodes on the first frame, fit them.
       if (!_didFit) {
         _didFit = true;
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -248,45 +240,101 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
         });
       }
 
+      // Compute offset so all positions are in positive canvas space
+      final allPts = [
+        ..._clusterPositions.values,
+        ..._memoryPositions.values,
+      ];
+      if (allPts.isEmpty) return const SizedBox();
+
+      const pad = 80.0;
+      final minX = allPts.map((p) => p.dx).reduce(math.min);
+      final minY = allPts.map((p) => p.dy).reduce(math.min);
+      final ox = pad - minX;
+      final oy = pad - minY;
+
+      // Build edge list (cluster center → memory center)
+      final edges = <(Offset, Offset)>[
+        for (final mem in widget.memories)
+          if (_clusterPositions[mem.memoryType] != null &&
+              _memoryPositions[mem] != null)
+            (
+              Offset(
+                _clusterPositions[mem.memoryType]!.dx + ox,
+                _clusterPositions[mem.memoryType]!.dy + oy,
+              ),
+              Offset(
+                _memoryPositions[mem]!.dx + ox,
+                _memoryPositions[mem]!.dy + oy,
+              ),
+            ),
+      ];
+
+      final edgePaint = Paint()
+        ..color = cs.outlineVariant
+        ..strokeWidth = 1.2
+        ..style = PaintingStyle.stroke;
+
       return Stack(
         children: [
-          // ── Scrollable / zoomable graph ─────────────────────────────────
-          InteractiveViewer(
-            transformationController: _transformController,
-            constrained: false,
-            // Large boundary so the user can pan freely, but not infinitely.
-            boundaryMargin: EdgeInsets.all(
-              math.max(constraints.maxWidth, constraints.maxHeight) * 1.5,
-            ),
-            minScale: 0.05,
-            maxScale: 4.0,
-            child: GraphView(
-              graph: _graph,
-              algorithm: _algorithm,
-              paint: Paint()
-                ..color = Colors.white24
-                ..strokeWidth = 1.2
-                ..style = PaintingStyle.stroke,
-              builder: (Node node) {
-                final id = node.key!.value as int;
-                final memory = _memoryNodes[id];
-
-                if (memory != null) {
-                  return _MemoryNode(
-                    memory: memory,
-                    onDelete: () => widget.onDelete(memory),
-                  );
-                }
-
-                final type = _clusterNodes.entries
-                    .firstWhere((e) => e.value == id)
-                    .key;
-                return _ClusterNode(type: type);
-              },
+          // ── Scrollable / zoomable graph ─────────────────────────────
+          SizedBox.expand(
+            child: InteractiveViewer(
+              transformationController: _transformController,
+              constrained: false,
+              boundaryMargin: EdgeInsets.all(
+                math.max(constraints.maxWidth, constraints.maxHeight) * 2.0,
+              ),
+              minScale: 0.1,
+              maxScale: 6.0,
+              child: SizedBox(
+                width: _graphW,
+                height: _graphH,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Edge layer
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _EdgePainter(edges: edges, edgePaint: edgePaint),
+                      ),
+                    ),
+                    // Cluster nodes
+                    for (final entry in _clusterPositions.entries)
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        child: Transform.translate(
+                          offset: Offset(
+                            entry.value.dx + ox,
+                            entry.value.dy + oy,
+                          ),
+                          child: FractionalTranslation(
+                            translation: const Offset(-0.5, -0.5),
+                            child: _ClusterNode(type: entry.key),
+                          ),
+                        ),
+                      ),
+                    // Memory nodes
+                    for (final entry in _memoryPositions.entries)
+                      Builder(builder: (ctx) {
+                        final size = 14.0 + entry.key.confidence * 8;
+                        return Positioned(
+                          left: entry.value.dx + ox - size / 2,
+                          top: entry.value.dy + oy - size / 2,
+                          child: _MemoryNode(
+                            memory: entry.key,
+                            onDelete: () => widget.onDelete(entry.key),
+                          ),
+                        );
+                      }),
+                  ],
+                ),
+              ),
             ),
           ),
 
-          // ── Zoom controls overlay ───────────────────────────────────────
+          // ── Zoom controls overlay ───────────────────────────────────
           Positioned(
             bottom: 24,
             right: 16,
@@ -300,6 +348,24 @@ class _MemoryGraphViewState extends State<MemoryGraphView>
       );
     });
   }
+}
+
+// ── Edge painter ──────────────────────────────────────────────────────────────
+
+class _EdgePainter extends CustomPainter {
+  const _EdgePainter({required this.edges, required this.edgePaint});
+  final List<(Offset, Offset)> edges;
+  final Paint edgePaint;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final (from, to) in edges) {
+      canvas.drawLine(from, to, edgePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_EdgePainter old) => old.edges != edges;
 }
 
 // ── Zoom control buttons ──────────────────────────────────────────────────────
@@ -317,14 +383,15 @@ class _ZoomControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2E).withValues(alpha: 0.92),
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white12),
+        border: Border.all(color: cs.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 10,
           ),
         ],
@@ -333,10 +400,13 @@ class _ZoomControls extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _ZoomBtn(icon: Icons.add, tooltip: 'Zoom in', onTap: onZoomIn),
-          const Divider(height: 1, color: Colors.white12, indent: 8, endIndent: 8),
+          Divider(height: 1, color: cs.outlineVariant, indent: 8, endIndent: 8),
           _ZoomBtn(icon: Icons.remove, tooltip: 'Zoom out', onTap: onZoomOut),
-          const Divider(height: 1, color: Colors.white12, indent: 8, endIndent: 8),
-          _ZoomBtn(icon: Icons.fit_screen_outlined, tooltip: 'Fit to screen', onTap: onFit),
+          Divider(height: 1, color: cs.outlineVariant, indent: 8, endIndent: 8),
+          _ZoomBtn(
+              icon: Icons.fit_screen_outlined,
+              tooltip: 'Fit to screen',
+              onTap: onFit),
         ],
       ),
     );
@@ -363,7 +433,9 @@ class _ZoomBtn extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Icon(icon, size: 18, color: Colors.white70),
+          child: Icon(icon,
+              size: 18,
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ),
     );
@@ -433,9 +505,10 @@ class _MemoryNode extends StatelessWidget {
 
   void _showDetail(BuildContext context) {
     final color = _colorFor(memory.memoryType);
+    final cs = Theme.of(context).colorScheme;
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E1E2E),
+      backgroundColor: cs.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -472,15 +545,15 @@ class _MemoryNode extends StatelessWidget {
                 const Spacer(),
                 Text(
                   '${(memory.confidence * 100).toStringAsFixed(0)}% confidence',
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
+                  style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11),
                 ),
               ],
             ),
             const SizedBox(height: 14),
             Text(
               memory.content,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: cs.onSurface,
                 fontSize: 15,
                 height: 1.5,
               ),

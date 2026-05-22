@@ -18,10 +18,11 @@ class CheckInCard extends ConsumerWidget {
     final configAsync = ref.watch(assistantConfigProvider);
     final name = configAsync.valueOrNull?.name ?? (configAsync.isLoading ? '...' : 'Rocky');
 
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E3F),
-        border: Border.all(color: const Color(0xFF4C1D95)),
+        color: cs.surfaceContainerHighest,
+        border: Border.all(color: cs.primary.withValues(alpha: 0.4)),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(16),
@@ -31,8 +32,8 @@ class CheckInCard extends ConsumerWidget {
         children: [
           Text(
             '☀️ Good morning, $name — How are you feeling today?',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: cs.onSurface,
               fontSize: 14,
             ),
           ),
