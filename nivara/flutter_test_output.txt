@@ -10,19 +10,19 @@
 00:01 +3: /home/user/nivara/nivara/test/services/mood_notification_service_test.dart: MoodNotificationService nextInstanceOf9AM returns a TZDateTime with hour == 9, minute == 0, second == 0
 00:01 +4: /home/user/nivara/nivara/test/services/mood_notification_service_test.dart: MoodNotificationService nextInstanceOf9AM returned time is at 9am today or tomorrow
 00:01 +5: /home/user/nivara/nivara/test/services/mood_notification_service_test.dart: (tearDownAll)
-00:02 +5: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents includes all Firestore events
-00:02 +6: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents adds GCal events not already in Firestore
-00:02 +7: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents does not duplicate events already tracked by googleEventId
-00:02 +8: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents sorts by startTime ascending
+00:01 +5: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents includes all Firestore events
+00:01 +6: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents adds GCal events not already in Firestore
+00:01 +7: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents does not duplicate events already tracked by googleEventId
+00:01 +8: /home/user/nivara/nivara/test/planner/planner_provider_test.dart: mergeEvents sorts by startTime ascending
 00:02 +9: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows connect title
 00:02 +10: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows connect title
 00:02 +11: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows connect title
 00:02 +12: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows connect title
 00:02 +13: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows connect title
 00:02 +14: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows connect title
-00:03 +15: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows allow and skip buttons
-00:03 +16: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: tapping Allow calls onAllow
-00:03 +17: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: tapping Skip calls onSkip
+00:02 +15: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: shows allow and skip buttons
+00:02 +16: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: tapping Allow calls onAllow
+00:02 +17: /home/user/nivara/nivara/test/planner/calendar_consent_page_test.dart: tapping Skip calls onSkip
 00:03 +18: /home/user/nivara/nivara/test/planner/event_tile_test.dart: shows event title
 00:03 +18 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: shows event title
 00:03 +18 -1: /home/user/nivara/nivara/test/voice/wake_word_engine_test.dart: WakeWordEngine has two values [E]
@@ -35,26 +35,66 @@
   
 00:03 +19 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: shows event title
 00:03 +20 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: shows event title
-00:04 +21 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: shows time string
-00:04 +22 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: local source shows purple left border color
-00:04 +23 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: googleCalendar source shows blue left border
-00:04 +24 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: synced source shows green left border
+00:03 +21 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: shows time string
+00:03 +22 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: local source shows purple left border color
+00:03 +23 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: googleCalendar source shows blue left border
+00:03 +24 -1: /home/user/nivara/nivara/test/planner/event_tile_test.dart: synced source shows green left border
 00:04 +25 -1: /home/user/nivara/nivara/test/voice/stt_wake_word_service_test.dart: SttWakeWordService implements WakeWordService
 00:04 +26 -1: /home/user/nivara/nivara/test/voice/stt_wake_word_service_test.dart: SttWakeWordService onWakeWord setter is assignable
 00:04 +27 -1: /home/user/nivara/nivara/test/voice/stt_wake_word_service_test.dart: SttWakeWordService stop completes without error before start
 00:04 +28 -1: /home/user/nivara/nivara/test/voice/stt_wake_word_service_test.dart: SttWakeWordService dispose completes without error
-00:05 +29 -1: /home/user/nivara/nivara/test/voice/voice_provider_test.dart: VoiceNotifier initial state is idle
-00:05 +30 -1: /home/user/nivara/nivara/test/voice/voice_provider_test.dart: VoiceNotifier stopAll returns to idle
-00:05 +31 -1: /home/user/nivara/nivara/test/voice/android_manifest_test.dart: AndroidManifest declares RECORD_AUDIO permission
-00:06 +32 -1: /home/user/nivara/nivara/test/voice/voice_state_test.dart: VoiceState has four values
-00:06 +33 -1: /home/user/nivara/nivara/test/voice/voice_state_test.dart: VoiceState contains idle, listening, processing, speaking
-00:06 +34 -1: /home/user/nivara/nivara/test/voice/voice_state_test.dart: VoiceState idle is the first value
-00:06 +35 -1: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
-00:07 +36 -1: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
-00:07 +37 -1: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
-00:07 +38 -1: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
-00:07 +39 -1: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
-00:07 +40 -1: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:04 +29 -1: /home/user/nivara/nivara/test/voice/voice_provider_test.dart: VoiceNotifier initial state is idle
+00:05 +29 -2: /home/user/nivara/nivara/test/voice/voice_provider_test.dart: VoiceNotifier stopAll returns to idle
+00:05 +29 -2: /home/user/nivara/nivara/test/voice/voice_provider_test.dart: VoiceNotifier initial state is idle [E]
+  MissingPluginException(No implementation found for method initialize on channel plugin.csdcorp.com/speech_to_text)
+  package:flutter/src/services/platform_channel.dart 364:7  MethodChannel._invokeMethod
+  ===== asynchronous gap ===========================
+  dart:async                                                _CustomZone.registerBinaryCallback
+  package:nivara/voice/voice_provider.dart 65:17            VoiceNotifier._init
+  package:nivara/voice/voice_provider.dart 53:5             VoiceNotifier.build
+  package:riverpod/src/notifier/base.dart 166:38            NotifierProviderImpl.runNotifierBuild
+  package:riverpod/src/notifier/base.dart 212:23            NotifierProviderElement.create
+  package:riverpod/src/framework/element.dart 426:7         ProviderElementBase.buildState
+  package:riverpod/src/framework/element.dart 228:5         ProviderElementBase.mount
+  package:riverpod/src/framework/container.dart 47:11       _StateReader._create
+  package:riverpod/src/framework/container.dart 35:52       _StateReader.getElement
+  package:riverpod/src/framework/container.dart 440:40      ProviderContainer.readProviderElement.<fn>
+  package:riverpod/src/framework/container.dart 475:8       ProviderContainer.readProviderElement
+  package:riverpod/src/framework/provider_base.dart 105:26  ProviderBase.read
+  package:riverpod/src/framework/container.dart 241:21      ProviderContainer.read
+  test/voice/voice_provider_test.dart 66:16                 main.<fn>.<fn>
+  
+  This test failed after it had already completed.
+  Make sure to use a matching library which informs the test runner
+  of pending async work.
+  package:flutter/src/services/platform_channel.dart 364:7  MethodChannel._invokeMethod
+  ===== asynchronous gap ===========================
+  dart:async                                                _CustomZone.registerBinaryCallback
+  package:nivara/voice/voice_provider.dart 65:17            VoiceNotifier._init
+  package:nivara/voice/voice_provider.dart 53:5             VoiceNotifier.build
+  package:riverpod/src/notifier/base.dart 166:38            NotifierProviderImpl.runNotifierBuild
+  package:riverpod/src/notifier/base.dart 212:23            NotifierProviderElement.create
+  package:riverpod/src/framework/element.dart 426:7         ProviderElementBase.buildState
+  package:riverpod/src/framework/element.dart 228:5         ProviderElementBase.mount
+  package:riverpod/src/framework/container.dart 47:11       _StateReader._create
+  package:riverpod/src/framework/container.dart 35:52       _StateReader.getElement
+  package:riverpod/src/framework/container.dart 440:40      ProviderContainer.readProviderElement.<fn>
+  package:riverpod/src/framework/container.dart 475:8       ProviderContainer.readProviderElement
+  package:riverpod/src/framework/provider_base.dart 105:26  ProviderBase.read
+  package:riverpod/src/framework/container.dart 241:21      ProviderContainer.read
+  test/voice/voice_provider_test.dart 66:16                 main.<fn>.<fn>
+  
+00:05 +30 -2: /home/user/nivara/nivara/test/voice/android_manifest_test.dart: AndroidManifest declares RECORD_AUDIO permission
+00:05 +31 -2: /home/user/nivara/nivara/test/voice/voice_state_test.dart: VoiceState has four values
+00:05 +32 -2: /home/user/nivara/nivara/test/voice/voice_state_test.dart: VoiceState contains idle, listening, processing, speaking
+00:05 +33 -2: /home/user/nivara/nivara/test/voice/voice_state_test.dart: VoiceState idle is the first value
+00:05 +34 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:06 +35 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:06 +36 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:06 +37 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:06 +38 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:06 +39 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
+00:06 +40 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options
 ══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
 The following TestFailure was thrown running a test:
 Expected: exactly one matching candidate
@@ -76,14 +116,13 @@ This was caught by the test expectation on the following line:
 The test description was:
   shows both engine options
 ════════════════════════════════════════════════════════════════════════════════════════════════════
-00:07 +40 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options [E]
+00:06 +40 -3: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section shows both engine options [E]
   Test failed. See exception logs above.
   The test description was: shows both engine options
   
-00:07 +40 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section STT option is selected by default
-00:08 +41 -2: /home/user/nivara/nivara/test/voice/ios_plist_test.dart: Info.plist declares microphone and speech recognition descriptions
-00:08 +42 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section Porcupine key field hidden when STT selected
-00:08 +43 -2: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section Porcupine key field shown when Porcupine selected
+00:06 +40 -3: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section STT option is selected by default
+00:07 +41 -3: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section Porcupine key field hidden when STT selected
+00:07 +42 -3: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section Porcupine key field shown when Porcupine selected
 ══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
 The following TestFailure was thrown running a test:
 Expected: exactly one matching candidate
@@ -105,11 +144,11 @@ This was caught by the test expectation on the following line:
 The test description was:
   Porcupine key field shown when Porcupine selected
 ════════════════════════════════════════════════════════════════════════════════════════════════════
-00:08 +43 -3: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section Porcupine key field shown when Porcupine selected [E]
+00:07 +42 -4: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section Porcupine key field shown when Porcupine selected [E]
   Test failed. See exception logs above.
   The test description was: Porcupine key field shown when Porcupine selected
   
-00:08 +43 -3: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section tapping Porcupine radio shows key field
+00:07 +42 -4: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section tapping Porcupine radio shows key field
 ══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
 The following assertion was thrown running a test:
 The finder "Found 0 widgets with text "Porcupine (custom wake word)": []" (used in a call to
@@ -131,121 +170,121 @@ When the exception was thrown, this was the stack:
 The test description was:
   tapping Porcupine radio shows key field
 ════════════════════════════════════════════════════════════════════════════════════════════════════
-00:08 +43 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
-00:08 +43 -4: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section tapping Porcupine radio shows key field [E]
+00:07 +42 -5: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
+00:07 +42 -5: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — Wake Word section tapping Porcupine radio shows key field [E]
   Test failed. See exception logs above.
   The test description was: tapping Porcupine radio shows key field
   
-00:09 +44 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
-00:09 +45 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
-00:09 +46 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
-00:09 +47 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
-00:09 +48 -4: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section tapping ElevenLabs radio shows key field
-00:09 +49 -4: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section tapping ElevenLabs radio shows key field
-00:09 +50 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows hourglass when processing
-00:09 +51 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows volume_up when speaking
-00:09 +52 -4: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab FAB is disabled (onPressed null) when processing
-00:10 +53 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default engine is stt
-00:10 +54 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default porcupineAccessKey is empty
-00:10 +55 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default ttsProvider is flutterTts
-00:10 +56 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default elevenLabsApiKey is empty
-00:10 +57 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setEngine persists and updates state
-00:10 +58 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setPorcupineAccessKey persists and updates state
-00:10 +59 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setTtsProvider persists and updates state
-00:10 +60 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setElevenLabsApiKey persists and updates state
-00:10 +61 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated engine
-00:10 +62 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated key
-00:10 +63 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated ttsProvider
-00:10 +64 -4: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated elevenLabsApiKey
-00:11 +65 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:11 +66 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:11 +67 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:12 +68 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:12 +69 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:12 +70 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:12 +71 -4: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
-00:12 +72 -4: loading /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart
-00:12 +72 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider warm when avg below 2.0
-00:12 +73 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider warm when avg exactly 2.0
-00:12 +74 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider calm when avg between 2.0 and 3.0
-00:12 +75 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when avg exactly 3.0
-00:12 +76 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when avg above 3.0
-00:12 +77 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when list is empty
-00:12 +78 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider skips null entries when computing average
-00:12 +79 -4: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when weekMoodProvider throws
-00:13 +80 -4: /home/user/nivara/nivara/test/features/mood/check_in_card_test.dart: CheckInCard shows 5 emoji tap targets
-00:13 +81 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:13 +82 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:13 +83 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:13 +84 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:14 +85 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:14 +86 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:14 +87 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
-00:14 +88 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows all 7 day columns
-00:14 +89 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows emoji for day with entry
-00:14 +90 -4: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows week average chip when data present
-00:14 +91 -4: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository save and getToday returns the entry
-00:14 +92 -4: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository passive cannot overwrite a checkin
-00:14 +93 -4: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository checkin overwrites passive
-00:14 +94 -4: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository getWeek returns 7 elements
-00:14 +95 -4: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository getToday returns null when no entry saved
-00:15 +96 -4: /home/user/nivara/nivara/test/features/chat/presentation/chat_provider_wiring_test.dart: aiModelNotifierProvider returns gemini when set
-00:15 +97 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_music_suggestion_test.dart: ChatNotifier music suggestion injection appends music suggestion hint when mood is calm and nothing is playing
+00:07 +43 -5: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
+00:07 +44 -5: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
+00:07 +45 -5: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab shows mic icon when idle
+00:07 +46 -5: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section ElevenLabs key field shown when ElevenLabs selected
+00:08 +47 -5: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section ElevenLabs key field shown when ElevenLabs selected
+00:08 +48 -5: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section ElevenLabs key field shown when ElevenLabs selected
+00:08 +49 -5: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section ElevenLabs key field shown when ElevenLabs selected
+00:08 +50 -5: /home/user/nivara/nivara/test/voice/voice_fab_test.dart: VoiceFab FAB is disabled (onPressed null) when processing
+00:08 +51 -5: /home/user/nivara/nivara/test/voice/voice_settings_page_test.dart: VoiceSettingsPage — TTS Provider section tapping ElevenLabs radio shows key field
+00:08 +52 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default engine is stt
+00:08 +53 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default porcupineAccessKey is empty
+00:08 +54 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default ttsProvider is flutterTts
+00:08 +55 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier default elevenLabsApiKey is empty
+00:08 +56 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setEngine persists and updates state
+00:08 +57 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setPorcupineAccessKey persists and updates state
+00:08 +58 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setTtsProvider persists and updates state
+00:08 +59 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettingsNotifier setElevenLabsApiKey persists and updates state
+00:08 +60 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated engine
+00:08 +61 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated key
+00:08 +62 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated ttsProvider
+00:08 +63 -5: /home/user/nivara/nivara/test/voice/voice_settings_provider_test.dart: VoiceSettings.copyWith creates a new instance with updated elevenLabsApiKey
+00:09 +64 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:09 +65 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:09 +66 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:10 +67 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:10 +68 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:10 +69 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:10 +70 -5: /home/user/nivara/nivara/test/profile/profile_setup_page_test.dart: profile setup page renders name and language fields
+00:10 +71 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider warm when avg below 2.0
+00:10 +72 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider warm when avg exactly 2.0
+00:10 +73 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider calm when avg between 2.0 and 3.0
+00:10 +74 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when avg exactly 3.0
+00:10 +75 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when avg above 3.0
+00:10 +76 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when list is empty
+00:10 +77 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider skips null entries when computing average
+00:10 +78 -5: /home/user/nivara/nivara/test/features/mood/mood_tone_provider_test.dart: moodToneProvider null when weekMoodProvider throws
+00:10 +79 -5: /home/user/nivara/nivara/test/features/mood/check_in_card_test.dart: CheckInCard shows 5 emoji tap targets
+00:11 +80 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +81 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +82 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +83 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +84 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +85 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +86 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows loading spinner while data loads
+00:11 +87 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows all 7 day columns
+00:12 +88 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows emoji for day with entry
+00:12 +89 -5: /home/user/nivara/nivara/test/features/mood/mood_board_page_test.dart: MoodBoardPage shows week average chip when data present
+00:12 +90 -5: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository save and getToday returns the entry
+00:12 +91 -5: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository passive cannot overwrite a checkin
+00:12 +92 -5: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository checkin overwrites passive
+00:12 +93 -5: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository getWeek returns 7 elements
+00:12 +94 -5: /home/user/nivara/nivara/test/features/mood/mood_repository_test.dart: MoodRepository getToday returns null when no entry saved
+00:12 +95 -5: /home/user/nivara/nivara/test/features/chat/presentation/chat_provider_wiring_test.dart: aiModelNotifierProvider returns gemini when set
+00:13 +96 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_music_suggestion_test.dart: ChatNotifier music suggestion injection appends music suggestion hint when mood is calm and nothing is playing
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:15 +98 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_music_suggestion_test.dart: ChatNotifier music suggestion injection does not append hint when music is already playing
+00:13 +97 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_music_suggestion_test.dart: ChatNotifier music suggestion injection does not append hint when music is already playing
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:15 +99 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_music_suggestion_test.dart: ChatNotifier music suggestion injection does not append hint when mood is not calm
+00:13 +98 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_music_suggestion_test.dart: ChatNotifier music suggestion injection does not append hint when mood is not calm
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:16 +100 -4: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns DoneChunk for [DONE]
-00:16 +101 -4: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns MoodChunk for valid __MOOD__ event
-00:16 +102 -4: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns TextChunk for __MOOD__ with invalid JSON
-00:16 +103 -4: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns TextChunk for __MOOD__ with out-of-range score
-00:16 +104 -4: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns TextChunk for normal text
-00:16 +105 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection prepends system message when moodToneProvider returns a hint
+00:13 +99 -5: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns DoneChunk for [DONE]
+00:13 +100 -5: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns MoodChunk for valid __MOOD__ event
+00:13 +101 -5: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns TextChunk for __MOOD__ with invalid JSON
+00:13 +102 -5: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns TextChunk for __MOOD__ with out-of-range score
+00:13 +103 -5: /home/user/nivara/nivara/test/features/chat/hermes_client_test.dart: parseSseData returns TextChunk for normal text
+00:13 +104 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection prepends system message when moodToneProvider returns a hint
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:16 +106 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection does NOT prepend system message when moodToneProvider returns null
+00:13 +105 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection does NOT prepend system message when moodToneProvider returns null
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:16 +107 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection tone hint is NOT stored as a ChatMessage in state
+00:13 +106 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection tone hint is NOT stored as a ChatMessage in state
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:16 +108 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection uses default tone (no system msg) when moodToneProvider throws
+00:14 +107 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_tone_test.dart: ChatNotifier tone injection uses default tone (no system msg) when moodToneProvider throws
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=claude baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:17 +109 -4: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
-00:17 +109 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_quota_test.dart: sendMessage increments messagesUsed on normal send
+00:14 +108 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
+00:14 +108 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_quota_test.dart: sendMessage increments messagesUsed on normal send
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=gemini_flash baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:17 +110 -4: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
-00:17 +110 -4: /home/user/nivara/nivara/test/features/chat/chat_provider_quota_test.dart: sendMessage increments graceUsed when inGrace
+00:14 +109 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
+00:14 +109 -5: /home/user/nivara/nivara/test/features/chat/chat_provider_quota_test.dart: sendMessage increments graceUsed when inGrace
 [CHAT] assistantName=Rocky
 [CHAT] aiModel=gemini_flash baseUrl=http://localhost
 [CHAT] starting chatStream
 [CHAT] eventMap=null hasFence=false
-00:17 +111 -4: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
-00:17 +112 -4: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
-00:18 +112 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
-00:18 +112 -5: /home/user/nivara/nivara/test/features/settings/ai_model_provider_test.dart: aiModelNotifierProvider defaults to gemini_flash [E]
+00:14 +110 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
+00:14 +111 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon mood icon is present in AppBar
+00:15 +112 -5: /home/user/nivara/nivara/test/features/settings/ai_model_provider_test.dart: aiModelNotifierProvider defaults to gemini_flash
+00:15 +112 -6: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon tapping mood icon navigates to /mood route
+00:15 +112 -6: /home/user/nivara/nivara/test/features/settings/ai_model_provider_test.dart: aiModelNotifierProvider defaults to gemini_flash [E]
   Expected: 'gemini_flash'
     Actual: 'groq'
      Which: is different.
@@ -258,14 +297,13 @@ The test description was:
   package:flutter_test/src/widget_tester.dart 473:18       expect
   test/features/settings/ai_model_provider_test.dart 16:5  main.<fn>
   
-00:18 +113 -5: /home/user/nivara/nivara/test/features/settings/ai_model_provider_test.dart: setModel persists to SharedPreferences
-00:18 +114 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon tapping mood icon navigates to /mood route
-00:18 +115 -5: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon tapping mood icon navigates to /mood route
-00:19 +116 -5: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository implements MusicRepository
-00:19 +117 -5: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getAllTracks returns 9 tracks
-00:19 +118 -5: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getPlaylistForMood(calm) returns 3 calm tracks
-00:19 +119 -5: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getPlaylistForMood(neutral) returns 3 neutral tracks
-00:19 +120 -5: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getPlaylistForMood(energized) returns 3 energized tracks
+00:15 +113 -6: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon tapping mood icon navigates to /mood route
+00:15 +114 -6: /home/user/nivara/nivara/test/features/chat/chat_page_mood_test.dart: ChatPage — mood AppBar icon tapping mood icon navigates to /mood route
+00:15 +115 -6: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository implements MusicRepository
+00:15 +116 -6: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getAllTracks returns 9 tracks
+00:15 +117 -6: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getPlaylistForMood(calm) returns 3 calm tracks
+00:15 +118 -6: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getPlaylistForMood(neutral) returns 3 neutral tracks
+00:15 +119 -6: /home/user/nivara/nivara/test/features/music/local_music_repository_test.dart: LocalMusicRepository getPlaylistForMood(energized) returns 3 energized tracks
 lib/features/music/presentation/pages/music_page.dart:5:8: Error: Error when reading 'lib/features/music/data/spotify_settings_provider.dart': No such file or directory
 import 'package:nivara/features/music/data/spotify_settings_provider.dart';
        ^
@@ -277,7 +315,10 @@ lib/features/music/presentation/pages/music_page.dart:65:19: Error: The getter '
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'spotifySettingsProvider'.
         ref.watch(spotifySettingsProvider).valueOrNull ?? const SpotifySettings();
                   ^^^^^^^^^^^^^^^^^^^^^^^
-00:19 +121 -6: loading /home/user/nivara/nivara/test/features/music/music_page_test.dart [E]
+00:16 +120 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand play music → MusicCommand.play
+00:16 +121 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand pause / stop music → MusicCommand.pause
+00:16 +122 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand resume / continue → MusicCommand.resume
+00:16 +122 -7: loading /home/user/nivara/nivara/test/features/music/music_page_test.dart [E]
   Failed to load "/home/user/nivara/nivara/test/features/music/music_page_test.dart":
   Compilation failed for testPath=/home/user/nivara/nivara/test/features/music/music_page_test.dart: lib/features/music/presentation/pages/music_page.dart:5:8: Error: Error when reading 'lib/features/music/data/spotify_settings_provider.dart': No such file or directory
   import 'package:nivara/features/music/data/spotify_settings_provider.dart';
@@ -291,89 +332,86 @@ Try correcting the name to the name of an existing getter, or defining a getter 
           ref.watch(spotifySettingsProvider).valueOrNull ?? const SpotifySettings();
                     ^^^^^^^^^^^^^^^^^^^^^^^
   .
-00:19 +121 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand play music → MusicCommand.play
-00:19 +122 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand pause / stop music → MusicCommand.pause
-00:19 +123 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand resume / continue → MusicCommand.resume
-00:19 +124 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand skip / next song → MusicCommand.skip
-00:19 +125 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand turn off music → MusicCommand.stop
-00:19 +126 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand calmer / relaxing → MusicCommand.playCalmCategory
-00:19 +127 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand upbeat / energize → MusicCommand.playEnergizedCategory
-00:19 +128 -6: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand unrecognised utterance returns null
-00:21 +129 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: initial state has sensible defaults
-00:21 +130 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: play sets isPlaying=true and currentTrack
-00:21 +131 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: pause sets isPlaying=false
-00:21 +132 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: stop clears currentTrack
-00:21 +133 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: skip advances to next track in playlist
-00:21 +134 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: skip wraps to first track at end of playlist
-00:21 +135 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: autoPlayForMood no-ops when isMoodAutoPlay=false
-00:21 +136 -6: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: autoPlayForMood no-ops when track already playing
-00:21 +137 -6: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest has exactly 9 tracks
-00:21 +138 -6: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest has 3 tracks per mood category
-00:21 +139 -6: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest all tracks have non-empty assetPath
-00:21 +140 -6: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest all track ids are unique
-00:22 +141 -6: /home/user/nivara/nivara/test/features/music/local_music_service_test.dart: LocalMusicService implements MusicService
-00:22 +142 -6: /home/user/nivara/nivara/test/features/music/local_music_service_test.dart: LocalMusicService exposes positionStream
-00:22 +143 -6: /home/user/nivara/nivara/test/features/music/local_music_service_test.dart: LocalMusicService exposes playerStateStream
-00:22 +144 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodCategoryFromAverage avg <= 2.0 → calm
-00:22 +145 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodCategoryFromAverage avg 2.1–2.9 → neutral
-00:22 +146 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodCategoryFromAverage avg >= 3.0 → energized
-00:22 +147 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns calm playlist for avg <= 2.0
-00:22 +148 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns neutral playlist for avg 2.1–2.9
-00:22 +149 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns energized playlist for avg >= 3.0
-00:22 +150 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns null for empty mood history
-00:22 +151 -6: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns null for list with only null entries
-00:22 +152 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +153 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +154 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +155 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +156 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +157 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +158 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
-00:23 +159 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows track title when track loaded
-00:23 +160 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows track artist when track loaded
-00:23 +161 -6: /home/user/nivara/nivara/test/features/music/interfaces_test.dart: MusicService play can be called without error
-00:23 +162 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +163 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +164 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +165 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +166 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +167 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +168 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
-00:23 +169 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
-00:23 +170 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
-00:23 +171 -6: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget tapping bar navigates to /music
-00:24 +172 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:24 +173 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:24 +174 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:24 +175 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:24 +176 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:24 +177 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:24 +178 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
-00:25 +179 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner hidden when not inGrace
-00:25 +180 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaIndicator shows message count on Free tier
-00:25 +181 -6: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaIndicator hidden on non-Free tier
-00:25 +182 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +183 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +184 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +185 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +186 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +187 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +188 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +189 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +190 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +191 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +192 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +193 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +194 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
-00:26 +195 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet shows upgrade CTA buttons
-00:26 +196 -6: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet shows Restore Purchases link
-00:26 +197 -6: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.fromMap parses a valid Firestore map
-00:26 +198 -6: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.fromMap defaults missing numeric fields to 0
-00:26 +199 -6: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.fromMap defaults missing model to gemini_flash
-00:26 +200 -6: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.isNewPeriod returns false when period started today
-00:26 +201 -6: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.isNewPeriod returns true when period started more than 30 days ago
-00:27 +202 -6: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Free tier has correct budget and defaults
-00:27 +202 -7: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Free tier has correct budget and defaults [E]
+00:16 +123 -7: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand skip / next song → MusicCommand.skip
+00:16 +124 -7: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand turn off music → MusicCommand.stop
+00:16 +125 -7: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand calmer / relaxing → MusicCommand.playCalmCategory
+00:16 +126 -7: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand upbeat / energize → MusicCommand.playEnergizedCategory
+00:16 +127 -7: /home/user/nivara/nivara/test/features/music/music_command_test.dart: matchMusicCommand unrecognised utterance returns null
+00:18 +128 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: initial state has sensible defaults
+00:18 +129 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: play sets isPlaying=true and currentTrack
+00:18 +130 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: pause sets isPlaying=false
+00:18 +131 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: stop clears currentTrack
+00:18 +132 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: skip advances to next track in playlist
+00:18 +133 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: skip wraps to first track at end of playlist
+00:18 +134 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: autoPlayForMood no-ops when isMoodAutoPlay=false
+00:18 +135 -7: /home/user/nivara/nivara/test/features/music/music_player_notifier_test.dart: autoPlayForMood no-ops when track already playing
+00:18 +136 -7: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest has exactly 9 tracks
+00:18 +137 -7: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest has 3 tracks per mood category
+00:18 +138 -7: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest all tracks have non-empty assetPath
+00:18 +139 -7: /home/user/nivara/nivara/test/features/music/music_manifest_test.dart: kMusicManifest all track ids are unique
+00:18 +140 -7: /home/user/nivara/nivara/test/features/music/local_music_service_test.dart: LocalMusicService implements MusicService
+00:18 +141 -7: /home/user/nivara/nivara/test/features/music/local_music_service_test.dart: LocalMusicService exposes positionStream
+00:18 +142 -7: /home/user/nivara/nivara/test/features/music/local_music_service_test.dart: LocalMusicService exposes playerStateStream
+00:18 +143 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodCategoryFromAverage avg <= 2.0 → calm
+00:18 +144 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodCategoryFromAverage avg 2.1–2.9 → neutral
+00:18 +145 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodCategoryFromAverage avg >= 3.0 → energized
+00:18 +146 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns calm playlist for avg <= 2.0
+00:19 +147 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns neutral playlist for avg 2.1–2.9
+00:19 +148 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns energized playlist for avg >= 3.0
+00:19 +149 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns null for empty mood history
+00:19 +150 -7: /home/user/nivara/nivara/test/features/music/mood_playlist_provider_test.dart: moodPlaylistProvider returns null for list with only null entries
+00:19 +151 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:19 +152 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:19 +153 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:19 +154 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:19 +155 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:19 +156 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:19 +157 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget hidden (SizedBox.shrink) when no track loaded
+00:20 +158 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows track title when track loaded
+00:20 +159 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows track artist when track loaded
+00:20 +160 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
+00:20 +161 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
+00:20 +162 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows pause icon when playing
+00:20 +163 -7: /home/user/nivara/nivara/test/features/music/interfaces_test.dart: MusicService resume can be called without error
+00:20 +164 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
+00:20 +165 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
+00:20 +166 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
+00:20 +167 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
+00:20 +168 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
+00:20 +169 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget shows play_arrow icon when paused
+00:20 +170 -7: /home/user/nivara/nivara/test/features/music/mini_player_widget_test.dart: MiniPlayerWidget tapping bar navigates to /music
+00:20 +171 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +172 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +173 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +174 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +175 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +176 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +177 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner shows banner when inGrace=true
+00:21 +178 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaBanner hidden when not inGrace
+00:21 +179 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaIndicator shows message count on Free tier
+00:21 +180 -7: /home/user/nivara/nivara/test/features/subscription/presentation/quota_banner_test.dart: QuotaIndicator hidden on non-Free tier
+00:21 +181 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +182 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +183 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +184 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +185 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +186 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +187 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +188 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +189 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +190 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +191 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +192 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +193 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet renders Pro and Premium tier cards
+00:22 +194 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet shows upgrade CTA buttons
+00:22 +195 -7: /home/user/nivara/nivara/test/features/subscription/presentation/paywall_sheet_test.dart: PaywallSheet shows Restore Purchases link
+00:22 +196 -7: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.fromMap parses a valid Firestore map
+00:22 +197 -7: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.fromMap defaults missing numeric fields to 0
+00:22 +198 -7: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.fromMap defaults missing model to gemini_flash
+00:22 +199 -7: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.isNewPeriod returns false when period started today
+00:22 +200 -7: /home/user/nivara/nivara/test/features/subscription/domain/quota_doc_test.dart: QuotaDoc.isNewPeriod returns true when period started more than 30 days ago
+00:23 +201 -7: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Free tier has correct budget and defaults
+00:23 +201 -8: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Free tier has correct budget and defaults [E]
   Expected: 'gemini_flash'
     Actual: 'groq'
      Which: is different.
@@ -386,8 +424,8 @@ Try correcting the name to the name of an existing getter, or defining a getter 
   package:flutter_test/src/widget_tester.dart 473:18           expect
   test/features/subscription/domain/tier_config_test.dart 9:7  main.<fn>.<fn>
   
-00:27 +202 -7: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Pro tier has correct budget and features
-00:27 +202 -8: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Pro tier has correct budget and features [E]
+00:23 +201 -8: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Pro tier has correct budget and features
+00:23 +201 -9: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Pro tier has correct budget and features [E]
   Expected: 'gemini_flash'
     Actual: 'groq'
      Which: is different.
@@ -400,8 +438,8 @@ Try correcting the name to the name of an existing getter, or defining a getter 
   package:flutter_test/src/widget_tester.dart 473:18            expect
   test/features/subscription/domain/tier_config_test.dart 22:7  main.<fn>.<fn>
   
-00:27 +202 -8: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Premium tier has correct budget and all features
-00:27 +202 -9: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Premium tier has correct budget and all features [E]
+00:23 +201 -9: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Premium tier has correct budget and all features
+00:23 +201 -10: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Premium tier has correct budget and all features [E]
   Expected: 'gemini_flash'
     Actual: 'groq'
      Which: is different.
@@ -414,28 +452,28 @@ Try correcting the name to the name of an existing getter, or defining a getter 
   package:flutter_test/src/widget_tester.dart 473:18            expect
   test/features/subscription/domain/tier_config_test.dart 37:7  main.<fn>.<fn>
   
-00:27 +202 -9: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: SubscriptionTier enum has three values
-00:27 +203 -9: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: SubscriptionTier enum values are free, pro, premium
-00:27 +204 -9: /home/user/nivara/nivara/test/features/memory/presentation/memory_provider_test.dart: memoryNotifierProvider loads memories
-00:27 +205 -9: /home/user/nivara/nivara/test/features/memory/presentation/memory_provider_test.dart: memoryNotifierProvider deletes a memory
-00:27 +206 -9: /home/user/nivara/nivara/test/features/memory/data/memory_repository_test.dart: MemoryRepository fetchMemories returns list of Memory on 200
-00:27 +207 -9: /home/user/nivara/nivara/test/features/memory/data/memory_repository_test.dart: MemoryRepository fetchMemories throws on non-200
-00:27 +208 -9: /home/user/nivara/nivara/test/features/memory/data/memory_repository_test.dart: MemoryRepository deleteMemory calls DELETE endpoint
-00:28 +209 -9: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
-00:28 +210 -9: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
-00:28 +211 -9: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
-00:29 +212 -9: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
-00:29 +213 -9: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent returns null when content has no JSON block
-00:29 +214 -9: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent returns null when JSON block has no schedule_event key
-00:29 +215 -9: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent parses valid schedule_event JSON block
-00:29 +216 -9: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent parses inline JSON without code fence
-00:29 +217 -9: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent returns null when JSON is malformed
-00:29 +218 -9: /home/user/nivara/nivara/test/router/app_router_test.dart: router file exports appRouterProvider
-00:29 +219 -9: Some tests failed.
+00:23 +201 -10: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: SubscriptionTier enum has three values
+00:23 +202 -10: /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: SubscriptionTier enum values are free, pro, premium
+00:23 +203 -10: /home/user/nivara/nivara/test/features/memory/presentation/memory_provider_test.dart: memoryNotifierProvider loads memories
+00:23 +204 -10: /home/user/nivara/nivara/test/features/memory/presentation/memory_provider_test.dart: memoryNotifierProvider deletes a memory
+00:23 +205 -10: /home/user/nivara/nivara/test/features/memory/data/memory_repository_test.dart: MemoryRepository fetchMemories returns list of Memory on 200
+00:23 +206 -10: /home/user/nivara/nivara/test/features/memory/data/memory_repository_test.dart: MemoryRepository fetchMemories throws on non-200
+00:23 +207 -10: /home/user/nivara/nivara/test/features/memory/data/memory_repository_test.dart: MemoryRepository deleteMemory calls DELETE endpoint
+00:24 +208 -10: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
+00:24 +209 -10: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
+00:24 +210 -10: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
+00:24 +211 -10: /home/user/nivara/nivara/test/chat/chat_page_test.dart: chat page renders message input bar
+00:25 +212 -10: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent returns null when content has no JSON block
+00:25 +213 -10: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent returns null when JSON block has no schedule_event key
+00:25 +214 -10: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent parses valid schedule_event JSON block
+00:25 +215 -10: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent parses inline JSON without code fence
+00:25 +216 -10: /home/user/nivara/nivara/test/chat/chat_event_parsing_test.dart: parseScheduledEvent returns null when JSON is malformed
+00:25 +217 -10: /home/user/nivara/nivara/test/router/app_router_test.dart: router file exports appRouterProvider
+00:25 +218 -10: Some tests failed.
 
 Failing tests:
   /home/user/nivara/nivara/test/features/music/music_page_test.dart: loading /home/user/nivara/nivara/test/features/music/music_page_test.dart
   /home/user/nivara/nivara/test/features/settings/ai_model_provider_test.dart: aiModelNotifierProvider defaults to gemini_flash
   /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Free tier has correct budget and defaults
   /home/user/nivara/nivara/test/features/subscription/domain/tier_config_test.dart: TierConfig.forTier Premium tier has correct budget and all features
-  ... and 5 more
+  ... and 6 more
